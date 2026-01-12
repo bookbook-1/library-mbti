@@ -1,1 +1,192 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>나만의 책 추천 테스트 (O/X)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+    <style>
+        /* 아이들에게 친숙한 폰트와 디자인 */
+        body { font-family: 'Jua', sans-serif; background-color: #FFF9C4; text-align: center; margin: 0; padding: 20px; color: #444; }
+        .container { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        
+        /* 화면 전환 제어 */
+        #loading, #quiz-box, #result-box { display: none; }
+        .active { display: block !important; }
 
+        /* O/X 버튼 디자인 */
+        .ox-container { display: flex; justify-content: center; gap: 20px; margin-top: 30px; }
+        .btn-ox { 
+            width: 120px; height: 120px; 
+            border-radius: 50%; border: none; 
+            font-size: 60px; font-family: 'Jua', sans-serif;
+            cursor: pointer; transition: transform 0.2s; 
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 5px 0 rgba(0,0,0,0.2);
+        }
+        .btn-o { background-color: #4CAF50; color: white; } /* 초록색 O */
+        .btn-x { background-color: #F44336; color: white; } /* 빨간색 X */
+        .btn-ox:active { transform: translateY(5px); box-shadow: none; }
+        .btn-ox:hover { transform: scale(1.05); }
+
+        .btn-start { background-color: #FF9800; color: white; font-size: 24px; padding: 15px 40px; border:none; border-radius: 50px; cursor: pointer; }
+        
+        /* 결과 화면 스타일 */
+        .result-img { width: 100%; max-width: 250px; border-radius: 20px; margin: 20px 0; border: 5px solid #FFD54F; }
+        .book-card { background: #fdfdfd; padding: 15px; border-radius: 15px; border: 3px solid #eee; display: flex; align-items: center; gap: 15px; margin-bottom: 15px; text-align: left; }
+        .book-card img { width: 80px; height: 110px; object-fit: cover; border-radius: 8px; background: #ddd; }
+        .tag { background: #FFECB3; padding: 5px 10px; border-radius: 10px; font-size: 14px; color: #E65100; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div id="loading" class="active">
+            <h2>문제지를 가져오고 있어요...<br>잠시만 기다려요! 🚀</h2>
+        </div>
+
+        <div id="start-box">
+            <h1 style="font-size: 40px; margin-bottom: 10px;">📚 독서 성향 테스트</h1>
+            <p style="font-size: 20px;">나는 어떤 책을 좋아할까?<br>12문제로 알아보아요!</p>
+            <br>
+            <button class="btn-start" onclick="startQuiz()">시작하기 ▶</button>
+        </div>
+
+        <div id="quiz-box">
+            <h3 id="q-progress" style="color:#888;">1 / 12</h3>
+            <h2 id="q-text" style="font-size: 32px; word-break: keep-all; min-height: 100px; display:flex; align-items:center; justify-content:center;">질문 내용</h2>
+            
+            <div class="ox-container">
+                <button class="btn-ox btn-o" onclick="selectOption('A')">O</button>
+                
+                <button class="btn-ox btn-x" onclick="selectOption('B')">X</button>
+            </div>
+            <p style="margin-top:20px; color:#888;">맞으면 O, 아니면 X를 눌러주세요</p>
+        </div>
+
+        <div id="result-box">
+            <h2>나의 독서 친구는?</h2>
+            <h1 id="result-title" style="color:#E65100; font-size:35px;">결과 이름</h1>
+            <img id="result-img" class="result-img" src="" alt="결과 이미지">
+            <p id="result-desc" style="font-size: 18px; line-height: 1.6;">결과 설명</p>
+            
+            <hr style="border: 2px dashed #ddd; margin: 30px 0;">
+            
+            <h3>🎁 나에게 딱 맞는 책 선물</h3>
+            <div id="book-list"></div>
+            
+            <button class="btn-start" onclick="location.reload()" style="margin-top:30px; font-size:18px;">다시 하기 ↺</button>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // 여기에 구글 스프레드 시트 ID를 넣어주세요
+        // ==========================================
+        const SHEET_ID = '여기에_시트_ID를_복사해서_넣으세요'; 
+
+        let questions = [];
+        let results = {};
+        let currentQ = 0;
+        let scores = { E:0, I:0, S:0, N:0, T:0, F:0, J:0, P:0 };
+
+        async function loadData() {
+            const base = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=`;
+            try {
+                const qRes = await fetch(base + 'Questions');
+                questions = csvToJson(await qRes.text());
+
+                const rRes = await fetch(base + 'Results');
+                const rData = csvToJson(await rRes.text());
+                rData.forEach(row => results[row.mbti] = row);
+
+                document.getElementById('loading').classList.remove('active');
+                document.getElementById('start-box').classList.add('active');
+            } catch (err) {
+                alert("데이터를 불러오지 못했어요. 시트 주소를 확인해주세요!");
+            }
+        }
+
+        function csvToJson(csv) {
+            const rows = csv.split('\n');
+            const headers = rows[0].split(',').map(h => h.trim().replace(/"/g, ''));
+            
+            return rows.slice(1).map(row => {
+                const values = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(v => v.trim().replace(/^"|"$/g, ''));
+                let obj = {};
+                headers.forEach((h, i) => obj[h] = values[i] || '');
+                return obj;
+            });
+        }
+
+        function startQuiz() {
+            document.getElementById('start-box').classList.remove('active');
+            document.getElementById('quiz-box').classList.add('active');
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const q = questions[currentQ];
+            document.getElementById('q-progress').innerText = `${currentQ + 1} / ${questions.length}`;
+            document.getElementById('q-text').innerText = q.question;
+            // O/X 버튼이므로 텍스트를 바꿀 필요가 없습니다.
+        }
+
+        function selectOption(choice) {
+            const q = questions[currentQ];
+            // A를 선택하면 O(그렇다) -> A_val 점수 획득
+            // B를 선택하면 X(아니다) -> B_val 점수 획득
+            const val = choice === 'A' ? q.A_val : q.B_val;
+            
+            if(scores[val] !== undefined) scores[val]++;
+
+            currentQ++;
+            if (currentQ < questions.length) {
+                showQuestion();
+            } else {
+                showResult();
+            }
+        }
+
+        function showResult() {
+            const mbti = [
+                scores.E >= scores.I ? 'E' : 'I',
+                scores.S >= scores.N ? 'S' : 'N',
+                scores.T >= scores.F ? 'T' : 'F',
+                scores.J >= scores.P ? 'J' : 'P'
+            ].join('');
+
+            const data = results[mbti];
+            
+            document.getElementById('quiz-box').classList.remove('active');
+            document.getElementById('result-box').classList.add('active');
+
+            if(data) {
+                document.getElementById('result-title').innerText = data.title;
+                document.getElementById('result-desc').innerText = data.desc;
+                document.getElementById('result-img').src = data.img_url || '';
+
+                const bookList = document.getElementById('book-list');
+                bookList.innerHTML = `
+                    <div class="book-card">
+                        <img src="${data.book1_img}">
+                        <div><span class="tag">1-2학년</span><h4 style="margin:5px 0;">${data.book1_title}</h4></div>
+                    </div>
+                    <div class="book-card">
+                        <img src="${data.book2_img}">
+                        <div><span class="tag">3-4학년</span><h4 style="margin:5px 0;">${data.book2_title}</h4></div>
+                    </div>
+                    <div class="book-card">
+                        <img src="${data.book3_img}">
+                        <div><span class="tag">5-6학년</span><h4 style="margin:5px 0;">${data.book3_title}</h4></div>
+                    </div>
+                `;
+            } else {
+                alert("결과를 찾을 수 없어요: " + mbti);
+            }
+        }
+
+        loadData();
+    </script>
+</body>
+</html>
