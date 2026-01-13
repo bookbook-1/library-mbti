@@ -6,6 +6,7 @@
     <title>나만의 책 추천 MBTI 테스트</title>
     <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     
     <style>
         /* --- 다꾸(다이어리 꾸미기) & 키치 스타일 --- */
@@ -14,15 +15,14 @@
             --container-bg: #ffffff;
             --accent-pink: #FF6B81;
             --accent-blue: #70A1FF;
-            --accent-yellow: #F39C12; /* 진한 노랑 */
-            --tape-color: rgba(255, 234, 167, 0.8); /* 마스킹 테이프 색 */
+            --accent-yellow: #F39C12;
+            --tape-color: rgba(255, 234, 167, 0.8);
             --border-color: #2F3542;
         }
 
         body {
             font-family: 'Jua', sans-serif;
             background-color: var(--bg-color);
-            /* 모눈종이 패턴 */
             background-image: 
                 linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px), 
                 linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px);
@@ -31,22 +31,24 @@
             display: flex; justify-content: center; align-items: center;
             min-height: 100vh; text-align: center;
             color: var(--border-color);
-            overflow-x: hidden; /* 가로 스크롤 방지 */
+            overflow-x: hidden;
         }
 
-        /* --- 둥둥 떠다니는 배경 장식 (아이들이 좋아할 요소) --- */
+        /* 둥둥 떠다니는 배경 장식 */
         .floating-bg {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; /* 클릭 방해 안 하게 */
-            z-index: -1;
+            pointer-events: none; z-index: -1;
         }
         .float-item {
-            position: absolute; font-size: 3rem; opacity: 0.6;
+            position: absolute; 
+            font-size: 6rem; /* 큼직하게 */
+            opacity: 0.4;
             animation: float 6s ease-in-out infinite;
+            filter: blur(1px);
         }
         @keyframes float {
             0% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-20px) rotate(10deg); }
+            50% { transform: translateY(-30px) rotate(10deg); }
             100% { transform: translateY(0px) rotate(0deg); }
         }
 
@@ -61,10 +63,10 @@
             z-index: 1;
         }
 
-        /* 컨테이너 위에 붙은 스티커 장식 */
         .sticker-deco {
-            position: absolute; font-size: 2.5rem;
+            position: absolute; font-size: 3.5rem;
             filter: drop-shadow(2px 2px 0px rgba(0,0,0,0.1));
+            z-index: 10;
         }
 
         h1 {
@@ -120,7 +122,7 @@
             width: 0%; transition: width 0.3s;
         }
         
-        /* --- 결과 화면 --- */
+        /* 결과 화면 */
         #mbti-type {
             color: var(--accent-blue); font-size: 3.5rem;
             -webkit-text-stroke: 2px var(--border-color);
@@ -129,18 +131,17 @@
         }
         @keyframes pop { 0% { transform: scale(0.5); } 100% { transform: scale(1); } }
 
-        /* 캐릭터 박스 (폴라로이드 + 마스킹테이프 느낌) */
+        /* 캐릭터 박스 */
         .char-box {
             background: white; border: 3px solid var(--border-color);
             border-radius: 5px; padding: 15px; margin-bottom: 40px;
             display: flex; align-items: flex-start; text-align: left;
             box-shadow: 5px 5px 15px rgba(0,0,0,0.1);
             position: relative;
-            transform: rotate(-1deg); /* 살짝 삐뚤게 */
+            transform: rotate(-1deg);
         }
-        /* 마스킹 테이프 효과 */
         .char-box::before {
-            content: ''; position: absolute; top: -15px; left: 50%; transform: translateX(-50%);
+            content: ''; position: absolute; top: -15px; left: 50%;
             width: 120px; height: 35px; background-color: var(--tape-color);
             opacity: 0.8; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             transform: translateX(-50%) rotate(2deg);
@@ -186,36 +187,37 @@
         @media (max-width: 600px) {
             #book-recommendations { grid-template-columns: 1fr; }
             .char-box { flex-direction: column; align-items: center; text-align: center; transform: none; margin-top: 20px;}
-            .char-box::before { display: none; } /* 모바일은 테이프 제거 */
+            .char-box::before { display: none; }
             .char-img { margin: 0 0 15px 0; }
             .btn-ox { width: 90px; height: 90px; }
+            .float-item { font-size: 4rem; }
         }
     </style>
 </head>
 <body>
 
 <div class="floating-bg">
-    <div class="float-item" style="top: 10%; left: 5%; animation-delay: 0s;">☁️</div>
-    <div class="float-item" style="top: 20%; right: 10%; animation-delay: 1s;">⭐</div>
-    <div class="float-item" style="bottom: 15%; left: 10%; animation-delay: 2s;">📚</div>
-    <div class="float-item" style="bottom: 30%; right: 5%; animation-delay: 3s;">🚀</div>
-    <div class="float-item" style="top: 50%; left: 2%; font-size: 2rem; animation-delay: 4s;">✏️</div>
-    <div class="float-item" style="top: 5%; right: 40%; font-size: 2rem; animation-delay: 1.5s;">🌈</div>
+    <div class="float-item" style="top: 5%; left: 5%; animation-delay: 0s;">☁️</div>
+    <div class="float-item" style="top: 15%; right: 5%; animation-delay: 1s;">⭐</div>
+    <div class="float-item" style="bottom: 10%; left: 8%; animation-delay: 2s;">📚</div>
+    <div class="float-item" style="bottom: 25%; right: 2%; animation-delay: 3s;">🚀</div>
+    <div class="float-item" style="top: 45%; left: -2%; animation-delay: 4s;">✏️</div>
+    <div class="float-item" style="top: 8%; right: 35%; animation-delay: 1.5s;">🌈</div>
 </div>
 
 <div class="container">
-    <div class="sticker-deco" style="top: -20px; left: -20px; transform: rotate(-15deg);">🎀</div>
-    <div class="sticker-deco" style="bottom: -10px; right: -10px; transform: rotate(10deg);">🧸</div>
+    <div class="sticker-deco" style="top: -25px; left: -25px; transform: rotate(-15deg);">🎀</div>
+    <div class="sticker-deco" style="bottom: -15px; right: -15px; transform: rotate(10deg);">🧸</div>
 
     <div id="start-screen">
-        <div style="font-size: 4rem; margin-bottom: 10px;">🏫📚🔍</div>
+        <div style="font-size: 5rem; margin-bottom: 20px;">🏫📚🔍</div>
         <h1>나만의<br>독서 성향 찾기!</h1>
         <p>나는 어떤 책을 좋아할까?<br>재미있는 퀴즈로 알아보자!</p>
         <button class="btn" onclick="startTest()">시작하기 ▶</button>
     </div>
 
     <div id="loading-screen" class="hidden">
-        <p style="font-size: 4rem; animation: spin 2s infinite linear;">🎡</p>
+        <p style="font-size: 5rem; animation: spin 2s infinite linear;">🎡</p>
         <p style="font-size: 1.5rem; font-weight: bold; color: var(--accent-blue);">열심히 분석 중...</p>
         <style>@keyframes spin { 100% { transform: rotate(360deg); } }</style>
     </div>
@@ -255,10 +257,12 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
 
 <script>
-    // ▼▼▼ 여기에 링크 다시 넣어주세요 ▼▼▼
+    // ==========================================
+    // [설정] 선생님의 구글 시트 링크가 적용되었습니다!
+    // ==========================================
     const QUESTIONS_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSr94F8Ac7dccR7pp4QhighoUgUjy_ADV-5fC6RqGgkpmKDjZHW5zoJ_Kc6lrGg2GRwnOVgj7F31cc0/pub?gid=0&single=true&output=csv";
     const RESULTS_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSr94F8Ac7dccR7pp4QhighoUgUjy_ADV-5fC6RqGgkpmKDjZHW5zoJ_Kc6lrGg2GRwnOVgj7F31cc0/pub?gid=950326899&single=true&output=csv";
-    // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+    // ==========================================
 
     let questions = [];
     let resultsData = [];
@@ -290,7 +294,6 @@
         const q = questions[currentQIndex];
         document.getElementById('q-progress').innerText = `Q${currentQIndex + 1}`;
         document.getElementById('q-text').innerText = q.Question;
-        // 게이지 바 업데이트
         const percent = ((currentQIndex) / questions.length) * 100;
         document.getElementById('p-fill').style.width = `${percent}%`;
     }
@@ -301,11 +304,10 @@
         if(typeToAdd && scores[typeToAdd.trim()] !== undefined) scores[typeToAdd.trim()]++;
         
         currentQIndex++;
-        // 게이지 바 애니메이션을 위해 잠시 대기
         document.getElementById('p-fill').style.width = `${(currentQIndex / questions.length) * 100}%`;
         
         if (currentQIndex < questions.length) {
-            setTimeout(showQuestion, 200); // 0.2초 뒤 다음 문제
+            setTimeout(showQuestion, 200);
         } else {
             setTimeout(calculateResult, 200);
         }
@@ -324,18 +326,31 @@
         document.getElementById('question-screen').classList.add('hidden');
         document.getElementById('result-screen').classList.remove('hidden');
         
-        // 결과 채우기
+        // 팡! 터지는 꽃가루 효과
+        var duration = 3 * 1000;
+        var animationEnd = Date.now() + duration;
+        var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 999 };
+
+        function randomInRange(min, max) { return Math.random() * (max - min) + min; }
+
+        var interval = setInterval(function() {
+            var timeLeft = animationEnd - Date.now();
+            if (timeLeft <= 0) { return clearInterval(interval); }
+            var particleCount = 50 * (timeLeft / duration);
+            confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+            confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
+        }, 250);
+
         if (myResult) {
             document.getElementById('mbti-type').innerText = mbti;
-            document.getElementById('mbti-desc').innerText = myResult.Description;
             
-            // 캐릭터 정보
+            // 캐릭터 정보 채우기
             const charImgSrc = myResult.Char_Img && myResult.Char_Img.startsWith('http') ? myResult.Char_Img : 'https://via.placeholder.com/150';
             document.getElementById('char-img').src = charImgSrc;
             document.getElementById('char-title').innerHTML = `<span style="background:#ff7675; color:white; padding:2px 8px; border-radius:10px; font-size:0.8rem; margin-right:5px;">닮은꼴</span> <b>${myResult.Char_Name}</b> (${myResult.Char_Book})`;
+            document.getElementById('mbti-desc').innerText = myResult.Char_Desc; // Char_Desc(캐릭터 설명) 사용
             document.getElementById('reading-tip').innerText = myResult.Reading_Tip;
 
-            // 추천 도서
             const container = document.getElementById('book-recommendations');
             container.innerHTML = '';
             
