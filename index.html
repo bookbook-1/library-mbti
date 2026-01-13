@@ -3,63 +3,198 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>나만의 책 추천 MBTI 테스트 (OX버전)</title>
+    <title>나만의 책 추천 MBTI 테스트</title>
+    <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+    
     <style>
-        /* 스타일 (디자인) */
-        :root { --primary-color: #6c5ce7; --o-color: #4834d4; --x-color: #eb4d4b; --bg-color: #f9f9f9; }
-        body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg-color); margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; text-align: center; }
-        .container { background: white; max-width: 600px; width: 100%; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        /* --- 디자인 설정 (여기서 색상 등을 바꿀 수 있어요) --- */
+        :root {
+            --main-bg: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%); /* 배경 그라데이션 */
+            --container-bg: #ffffff;
+            --text-color: #333;
+            --accent-color: #FFC312; /* 노란색 포인트 */
+            --btn-color: #12CBC4;   /* 기본 버튼 색 (민트) */
+            --o-color: #0652DD;     /* O 버튼 색 (파랑) */
+            --x-color: #EA2027;     /* X 버튼 색 (빨강) */
+        }
+
+        body {
+            font-family: 'Jua', sans-serif; /* 주아체 적용 */
+            background: var(--main-bg);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            text-align: center;
+            color: var(--text-color);
+        }
+
+        .container {
+            background: var(--container-bg);
+            max-width: 600px;
+            width: 90%;
+            padding: 40px 30px;
+            border-radius: 30px; /* 둥글둥글하게 */
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1), 0 5px 15px rgba(0,0,0,0.07); /* 부드러운 그림자 */
+            border: 5px solid var(--accent-color); /* 알록달록 테두리 */
+        }
         
+        h1 {
+            font-size: 2.5rem;
+            color: #009432;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 0px #A3CB38;
+        }
+        
+        h2 { color: #0652DD; }
+        p { font-size: 1.3rem; margin-bottom: 30px; }
+
         .hidden { display: none; }
         
-        /* OX 버튼 전용 스타일 */
-        .ox-container { display: flex; gap: 20px; justify-content: center; margin-top: 30px; }
-        .btn-ox { width: 100px; height: 100px; border-radius: 50%; border: none; font-size: 2.5rem; font-weight: bold; cursor: pointer; transition: 0.2s; color: white; display: flex; align-items: center; justify-content: center; }
-        
-        .btn-o { background-color: var(--o-color); box-shadow: 0 5px 0 #2c2c54; }
-        .btn-o:active { box-shadow: none; transform: translateY(5px); }
-        
-        .btn-x { background-color: var(--x-color); box-shadow: 0 5px 0 #c0392b; }
-        .btn-x:active { box-shadow: none; transform: translateY(5px); }
+        /* 기본 버튼 스타일 */
+        .btn {
+            display: block;
+            width: 80%;
+            margin: 20px auto;
+            padding: 15px;
+            border: none;
+            border-radius: 50px; /* 알약 모양 */
+            background-color: var(--btn-color);
+            color: white;
+            font-size: 1.5rem;
+            font-family: 'Jua', sans-serif;
+            cursor: pointer;
+            box-shadow: 0 5px 0 #009432; /* 입체감 */
+            transition: all 0.2s;
+        }
+        .btn:hover {
+            transform: translateY(-3px) scale(1.02); /* 통통 튀는 효과 */
+            box-shadow: 0 8px 0 #009432;
+        }
+        .btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #009432;
+        }
 
-        .btn { display: block; width: 100%; padding: 15px; margin: 10px 0; border: 2px solid var(--primary-color); border-radius: 10px; background: white; color: var(--primary-color); font-size: 1.1rem; cursor: pointer; }
-        .btn:hover { background: var(--primary-color); color: white; }
+        /* --- OX 버튼 전용 스타일 --- */
+        #q-text {
+            font-size: 1.8rem;
+            margin: 40px 0;
+            line-height: 1.4;
+            word-break: keep-all;
+            color: #2d3436;
+        }
+        .ox-container {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            margin-top: 40px;
+        }
+        .btn-ox {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 5px solid white;
+            font-size: 3.5rem;
+            font-family: 'Jua', sans-serif;
+            cursor: pointer;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .btn-ox span { font-size: 1.5rem; margin-top: 5px; }
+
+        .btn-o {
+            background-color: var(--o-color);
+            box-shadow: 0 8px 0 #00cec9, inset 0 -5px 10px rgba(0,0,0,0.2);
+        }
+        .btn-x {
+            background-color: var(--x-color);
+            box-shadow: 0 8px 0 #d63031, inset 0 -5px 10px rgba(0,0,0,0.2);
+        }
+        .btn-ox:hover { transform: translateY(-5px) scale(1.1); }
+        .btn-o:active { box-shadow: 0 3px 0 #00cec9; transform: translateY(3px); }
+        .btn-x:active { box-shadow: 0 3px 0 #d63031; transform: translateY(3px); }
         
-        /* 결과 화면 스타일 */
-        .book-card { border: 1px solid #ddd; border-radius: 10px; padding: 15px; margin-bottom: 20px; text-align: left; display: flex; align-items: center; }
-        .book-card img { width: 80px; height: 110px; object-fit: cover; margin-right: 15px; border-radius: 5px; background: #eee; }
-        .book-info h4 { margin: 0 0 5px 0; color: #555; font-size: 0.9rem; }
-        .book-info h3 { margin: 0; font-size: 1.2rem; }
-        .loading { font-size: 1.5rem; color: #888; }
+        /* 진행률 표시 */
+        #q-progress {
+            background: var(--accent-color);
+            color: black;
+            display: inline-block;
+            padding: 5px 20px;
+            border-radius: 20px;
+            font-size: 1.2rem;
+        }
+        
+        /* --- 결과 화면 카드 스타일 --- */
+        #mbti-type { color: #EA2027; font-size: 2.5rem; text-shadow: 2px 2px 0 #F79F1F;}
+        .book-card {
+            background: #fff0f6;
+            border: 3px solid #fd79a8;
+            border-radius: 20px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.05);
+            transition: 0.3s;
+        }
+        .book-card:hover { transform: translateY(-5px); }
+        .book-card img {
+            width: 90px; height: 130px;
+            object-fit: cover;
+            margin-right: 20px;
+            border-radius: 10px;
+            border: 2px solid white;
+            box-shadow: 3px 3px 8px rgba(0,0,0,0.2);
+        }
+        .book-info h4 {
+            margin: 0 0 5px 0;
+            color: #009432;
+            font-size: 1.1rem;
+            background: #A3CB38; color: white; padding: 2px 10px; border-radius: 10px; display: inline-block;
+        }
+        .book-info h3 { margin: 5px 0 0 0; font-size: 1.4rem; color: #2d3436;}
+        .loading { font-size: 1.8rem; color: var(--btn-color); font-weight: bold;}
     </style>
 </head>
 <body>
 
 <div class="container">
     <div id="start-screen">
-        <h1>📚 독서 성향 테스트</h1>
-        <p>제시되는 문장을 보고 O / X 를 선택해주세요!</p>
-        <button class="btn" onclick="startTest()">테스트 시작하기</button>
+        <h1>📚 퀴즈로 알아보는<br>나의 독서 스타일!</h1>
+        <p style="font-size: 4rem; margin: 20px 0;">🧐</p>
+        <p>제시되는 문장을 보고<br>O 또는 X 버튼을 눌러줘!</p>
+        <button class="btn" onclick="startTest()">테스트 시작하기 ▶</button>
     </div>
 
     <div id="loading-screen" class="hidden">
-        <p class="loading">데이터를 불러오는 중입니다...</p>
+        <p style="font-size: 4rem;">🚀</p>
+        <p class="loading">문제를 가져오는 중...</p>
     </div>
 
     <div id="question-screen" class="hidden">
         <h2 id="q-progress">1 / 12</h2>
-        <h3 id="q-text" style="margin: 50px 0; line-height: 1.5;">질문 내용</h3>
+        <h3 id="q-text">질문 내용</h3>
         
         <div class="ox-container">
-            <button class="btn-ox btn-o" onclick="selectAnswer('O')">O</button>
-            <button class="btn-ox btn-x" onclick="selectAnswer('X')">X</button>
+            <button class="btn-ox btn-o" onclick="selectAnswer('O')">🙆‍♂️<span>그렇다!</span></button>
+            <button class="btn-ox btn-x" onclick="selectAnswer('X')">🙅‍♀️<span>아니다!</span></button>
         </div>
     </div>
 
     <div id="result-screen" class="hidden">
-        <h2>당신의 유형은: <span id="mbti-type"></span></h2>
+        <h2>🎉 나의 독서 유형은:</h2>
+        <h1 id="mbti-type"></h1>
+        <p>나에게 딱 맞는 추천 도서!</p>
         <div id="book-recommendations"></div>
-        <button class="btn" onclick="location.reload()">다시 테스트하기</button>
+        <button class="btn" style="background-color: #EA2027; box-shadow: 0 5px 0 #b71540;" onclick="location.reload()">다시 테스트하기 🔄</button>
     </div>
 </div>
 
@@ -67,7 +202,7 @@
 
 <script>
     // ==========================================
-    // [설정] 여기에 구글 시트 CSV 링크를 넣으세요 (기존 것 그대로 사용 가능)
+    // [설정] 사용자의 구글 시트 링크가 적용되었습니다.
     // ==========================================
     const QUESTIONS_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSr94F8Ac7dccR7pp4QhighoUgUjy_ADV-5fC6RqGgkpmKDjZHW5zoJ_Kc6lrGg2GRwnOVgj7F31cc0/pub?gid=0&single=true&output=csv";
     const RESULTS_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSr94F8Ac7dccR7pp4QhighoUgUjy_ADV-5fC6RqGgkpmKDjZHW5zoJ_Kc6lrGg2GRwnOVgj7F31cc0/pub?gid=950326899&single=true&output=csv";
@@ -91,12 +226,18 @@
             questions = Papa.parse(qData, { header: true, skipEmptyLines: true }).data;
             resultsData = Papa.parse(rData, { header: true, skipEmptyLines: true }).data;
 
+            if(questions.length === 0 || !questions[0].Question) {
+                // 데이터 진단
+                console.log("읽어온 데이터:", questions);
+                throw new Error("데이터를 읽어왔지만 내용이 비어있거나 'Question' 열을 찾을 수 없습니다.");
+            }
+
             document.getElementById('loading-screen').classList.add('hidden');
             document.getElementById('question-screen').classList.remove('hidden');
             showQuestion();
 
         } catch (error) {
-            alert("데이터 로드 실패! CSV 링크를 확인해주세요.");
+            alert("오류가 발생했어요! 선생님께 알려주세요. \n(원인: " + error.message + ")");
         }
     }
 
@@ -104,18 +245,16 @@
 
     function showQuestion() {
         const q = questions[currentQIndex];
-        document.getElementById('q-progress').innerText = `${currentQIndex + 1} / ${questions.length}`;
+        // 진행률 표시
+        document.getElementById('q-progress').innerText = `${currentQIndex + 1} 단계 / 총 ${questions.length} 단계`;
         document.getElementById('q-text').innerText = q.Question;
     }
 
-    // OX 선택 로직
     function selectAnswer(choice) {
         const q = questions[currentQIndex];
-        
-        // O를 선택하면 If_O의 값을, X를 선택하면 If_X의 값을 점수에 추가
         const typeToAdd = choice === 'O' ? q.If_O : q.If_X;
         
-        // 공백 제거 및 대문자 변환 후 점수 추가
+        // 점수 계산 (공백 제거)
         if(typeToAdd && scores[typeToAdd.trim()] !== undefined) {
             scores[typeToAdd.trim()]++;
         }
@@ -129,7 +268,7 @@
     }
 
     function calculateResult() {
-        // 기존과 동일하게 점수가 더 높은 쪽을 선택
+        // MBTI 조합
         const mbti = [
             scores.E >= scores.I ? 'E' : 'I',
             scores.S >= scores.N ? 'S' : 'N',
@@ -139,14 +278,16 @@
 
         const myResult = resultsData.find(r => r.MBTI === mbti);
 
+        // 화면 전환
         document.getElementById('question-screen').classList.add('hidden');
         document.getElementById('result-screen').classList.remove('hidden');
-        document.getElementById('mbti-type').innerText = mbti;
+        document.getElementById('mbti-type').innerText = mbti + " 유형";
 
         const container = document.getElementById('book-recommendations');
         container.innerHTML = '';
 
         if (myResult) {
+            // 결과 데이터 뿌리기
             const books = [
                 { label: myResult.Label1, title: myResult.Title1, img: myResult.Image1 },
                 { label: myResult.Label2, title: myResult.Title2, img: myResult.Image2 },
@@ -154,7 +295,9 @@
             ];
 
             books.forEach(book => {
-                const imgSrc = book.img && book.img.startsWith('http') ? book.img : 'https://via.placeholder.com/80x110?text=No+Image';
+                // 이미지가 비어있거나 이상하면 대체 이미지 사용
+                const imgSrc = book.img && book.img.startsWith('http') ? book.img : 'https://via.placeholder.com/90x130/ffeaa7/fd79a8?text=표지준비중';
+                
                 const html = `
                     <div class="book-card">
                         <img src="${imgSrc}" alt="${book.title}">
@@ -167,7 +310,7 @@
                 container.innerHTML += html;
             });
         } else {
-            container.innerHTML = '<p>결과를 찾을 수 없습니다.</p>';
+            container.innerHTML = '<p>결과를 찾지 못했어요! 시트 데이터를 확인해주세요.</p>';
         }
     }
 </script>
