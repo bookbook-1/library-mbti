@@ -234,7 +234,7 @@
 
     <div id="result-screen" class="hidden">
         <div style="font-size: 1.2rem; background: var(--accent-yellow); display: inline-block; padding: 5px 15px; border-radius: 20px; border: 2px solid black; color: white; margin-bottom: 10px;">✨ 분석 완료! ✨</div>
-        <h2 style="margin:0;">나의 독서 캐릭터는?</h2>
+        <h2 style="margin:0;">나의 독서 유형은?</h2>
         <h1 id="mbti-type">TYPE</h1>
         
         <div class="char-box">
@@ -347,7 +347,7 @@
             // 캐릭터 정보 채우기
             const charImgSrc = myResult.Char_Img && myResult.Char_Img.startsWith('http') ? myResult.Char_Img : 'https://via.placeholder.com/150';
             document.getElementById('char-img').src = charImgSrc;
-            document.getElementById('char-title').innerHTML = `<span style="background:#ff7675; color:white; padding:2px 8px; border-radius:10px; font-size:0.8rem; margin-right:5px;">나와 닮은 책 속 캐릭터</span> <b>${myResult.Char_Name}</b> (${myResult.Char_Book})`;
+            document.getElementById('char-title').innerHTML = `<span style="background:#ff7675; color:white; padding:2px 8px; border-radius:10px; font-size:0.8rem; margin-right:5px;">나와 닮은 책 속 주인공</span> <b>${myResult.Char_Name}</b> (${myResult.Char_Book})`;
             document.getElementById('mbti-desc').innerText = myResult.Char_Desc; // Char_Desc(캐릭터 설명) 사용
             document.getElementById('reading-tip').innerText = myResult.Reading_Tip;
 
