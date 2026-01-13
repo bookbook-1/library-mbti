@@ -347,7 +347,7 @@
             // 캐릭터 정보 채우기
             const charImgSrc = myResult.Char_Img && myResult.Char_Img.startsWith('http') ? myResult.Char_Img : 'https://via.placeholder.com/150';
             document.getElementById('char-img').src = charImgSrc;
-            document.getElementById('char-title').innerHTML = `<span style="background:#ff7675; color:white; padding:2px 8px; border-radius:10px; font-size:0.8rem; margin-right:5px;">닮은꼴</span> <b>${myResult.Char_Name}</b> (${myResult.Char_Book})`;
+            document.getElementById('char-title').innerHTML = `<span style="background:#ff7675; color:white; padding:2px 8px; border-radius:10px; font-size:0.8rem; margin-right:5px;">나와 닮은 책 속 캐릭터</span> <b>${myResult.Char_Name}</b> (${myResult.Char_Book})`;
             document.getElementById('mbti-desc').innerText = myResult.Char_Desc; // Char_Desc(캐릭터 설명) 사용
             document.getElementById('reading-tip').innerText = myResult.Reading_Tip;
 
