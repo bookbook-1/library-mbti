@@ -8,243 +8,220 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* --- 뉴트로 키치 디자인 --- */
+        /* --- 다꾸(다이어리 꾸미기) & 키치 스타일 --- */
         :root {
-            --main-bg: #F0EDFF;
+            --bg-color: #FFF0F5; /* 연한 핑크 배경 */
             --container-bg: #ffffff;
-            --text-color: #2d3436;
-            --accent-pink: #FF7EB3;
-            --accent-blue: #74EBD5;
-            --accent-yellow: #FDCB6E;
-            --border-color: #2d3436;
+            --accent-pink: #FF6B81;
+            --accent-blue: #70A1FF;
+            --accent-yellow: #F39C12; /* 진한 노랑 */
+            --tape-color: rgba(255, 234, 167, 0.8); /* 마스킹 테이프 색 */
+            --border-color: #2F3542;
         }
 
         body {
             font-family: 'Jua', sans-serif;
-            background-color: var(--main-bg);
-            background-image: linear-gradient(var(--border-color) 1px, transparent 1px), linear-gradient(90deg, var(--border-color) 1px, transparent 1px);
-            background-size: 30px 30px;
-            background-blend-mode: soft-light;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            text-align: center;
-            color: var(--text-color);
+            background-color: var(--bg-color);
+            /* 모눈종이 패턴 */
+            background-image: 
+                linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px), 
+                linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px);
+            background-size: 40px 40px;
+            margin: 0; padding: 20px;
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh; text-align: center;
+            color: var(--border-color);
+            overflow-x: hidden; /* 가로 스크롤 방지 */
+        }
+
+        /* --- 둥둥 떠다니는 배경 장식 (아이들이 좋아할 요소) --- */
+        .floating-bg {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; /* 클릭 방해 안 하게 */
+            z-index: -1;
+        }
+        .float-item {
+            position: absolute; font-size: 3rem; opacity: 0.6;
+            animation: float 6s ease-in-out infinite;
+        }
+        @keyframes float {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(10deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
         }
 
         .container {
             background: var(--container-bg);
-            max-width: 700px;
-            width: 95%;
+            max-width: 700px; width: 95%;
             padding: 40px 30px;
-            border-radius: 25px;
+            border-radius: 30px;
             border: 4px solid var(--border-color);
-            box-shadow: 8px 8px 0px rgba(0,0,0,0.2);
+            box-shadow: 10px 10px 0px rgba(0,0,0,0.15);
+            position: relative;
+            z-index: 1;
         }
-        
+
+        /* 컨테이너 위에 붙은 스티커 장식 */
+        .sticker-deco {
+            position: absolute; font-size: 2.5rem;
+            filter: drop-shadow(2px 2px 0px rgba(0,0,0,0.1));
+        }
+
         h1 {
-            font-size: 2.8rem;
-            color: var(--accent-pink);
+            font-size: 2.8rem; color: var(--accent-pink);
             margin-bottom: 15px;
             -webkit-text-stroke: 2px var(--border-color);
-            text-shadow: 3px 3px 0px var(--accent-yellow);
+            text-shadow: 3px 3px 0px #FAD390;
         }
         
-        h2 { color: var(--text-color); margin-top: 0;}
         p { font-size: 1.4rem; margin-bottom: 30px; line-height: 1.6; }
 
         .hidden { display: none; }
         
+        /* 버튼 스타일 */
         .btn {
-            display: block;
-            width: 70%;
-            margin: 25px auto;
-            padding: 15px;
-            border: 3px solid var(--border-color);
-            border-radius: 15px;
-            background-color: var(--accent-blue);
-            color: var(--border-color);
-            font-size: 1.6rem;
-            font-family: 'Jua', sans-serif;
-            cursor: pointer;
-            box-shadow: 5px 5px 0px var(--border-color);
+            display: block; width: 80%; margin: 25px auto; padding: 15px;
+            border: 3px solid var(--border-color); border-radius: 50px;
+            background-color: var(--accent-blue); color: white;
+            font-size: 1.8rem; font-family: 'Jua', sans-serif;
+            cursor: pointer; box-shadow: 0 6px 0 var(--border-color);
             transition: all 0.1s;
         }
-        .btn:hover { transform: translate(-2px, -2px); box-shadow: 7px 7px 0px var(--border-color); background-color: #5EDCC6; }
-        .btn:active { transform: translate(3px, 3px); box-shadow: 2px 2px 0px var(--border-color); }
+        .btn:hover { transform: translateY(-3px); box-shadow: 0 9px 0 var(--border-color); background-color: #5352ed; }
+        .btn:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--border-color); }
 
-        /* OX 버튼 */
+        /* OX 질문 박스 */
         #q-text {
-            font-size: 2rem;
-            margin: 50px 0;
-            line-height: 1.4;
-            word-break: keep-all;
-            color: var(--text-color);
-            background: var(--accent-yellow);
-            padding: 20px;
-            border-radius: 15px;
-            border: 3px solid var(--border-color);
-            box-shadow: 5px 5px 0 rgba(0,0,0,0.1);
+            font-size: 2rem; margin: 40px 0; line-height: 1.4; word-break: keep-all;
+            background: #fff; border: 3px dashed var(--border-color);
+            padding: 30px; border-radius: 20px;
+            box-shadow: 5px 5px 0 rgba(0,0,0,0.05);
         }
-        .ox-container { display: flex; gap: 25px; justify-content: center; margin-top: 40px; }
+        .ox-container { display: flex; gap: 20px; justify-content: center; margin-top: 30px; }
         .btn-ox {
-            width: 100px; height: 100px;
-            border-radius: 20px; border: 3px solid var(--border-color);
+            width: 110px; height: 110px; border-radius: 50%;
+            border: 4px solid var(--border-color);
             font-size: 4rem; font-family: 'Jua', sans-serif; font-weight: bold;
             cursor: pointer; display: flex; align-items: center; justify-content: center;
-            transition: all 0.1s; box-shadow: 6px 6px 0px var(--border-color);
+            transition: all 0.2s; box-shadow: 5px 5px 0 rgba(0,0,0,0.2);
         }
-        .btn-o { background-color: #A3CB38; color: white; }
-        .btn-x { background-color: var(--accent-pink); color: white; }
-        .btn-ox:hover { transform: translate(-3px, -3px); box-shadow: 9px 9px 0px var(--border-color);}
-        .btn-ox:active { transform: translate(3px, 3px); box-shadow: 3px 3px 0px var(--border-color);}
-        
-        #q-progress {
-            background: var(--accent-pink); color: white;
-            display: inline-block; padding: 8px 25px;
-            border-radius: 30px; font-size: 1.3rem; border: 3px solid var(--border-color);
+        .btn-o { background-color: #2ed573; color: white; }
+        .btn-x { background-color: #ff4757; color: white; }
+        .btn-ox:hover { transform: scale(1.1) rotate(-5deg); }
+
+        /* 진행률 바 */
+        .progress-bar {
+            width: 100%; height: 20px; background: #eee;
+            border-radius: 10px; border: 2px solid var(--border-color);
+            margin-bottom: 20px; overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%; background: var(--accent-yellow);
+            width: 0%; transition: width 0.3s;
         }
         
-        /* --- 결과 화면 스타일 --- */
+        /* --- 결과 화면 --- */
         #mbti-type {
-            color: var(--accent-blue);
-            font-size: 3rem;
+            color: var(--accent-blue); font-size: 3.5rem;
             -webkit-text-stroke: 2px var(--border-color);
-            text-shadow: 4px 4px 0 var(--accent-pink);
-            margin: 10px 0 20px 0;
+            text-shadow: 4px 4px 0 #eee; margin: 10px 0;
+            animation: pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
+        @keyframes pop { 0% { transform: scale(0.5); } 100% { transform: scale(1); } }
 
-        #mbti-desc {
-            background: #fff;
-            border: 2px dashed var(--border-color);
-            border-radius: 15px;
-            padding: 15px;
-            margin: 0 0 30px 0;
-            font-size: 1.2rem;
-            color: #555;
-            word-break: keep-all;
-        }
-
-        /* [NEW] 캐릭터&조언 박스 스타일 (키치 버전) */
+        /* 캐릭터 박스 (폴라로이드 + 마스킹테이프 느낌) */
         .char-box {
-            background: #f1f2f6; /* 요청하신 회색톤 배경 */
-            border: 3px solid var(--border-color);
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 30px;
-            display: flex;
-            align-items: flex-start; /* 위쪽 정렬 */
-            text-align: left;
-            box-shadow: 6px 6px 0px rgba(0,0,0,0.1);
-            position: relative; /* 아이콘 배치를 위해 */
+            background: white; border: 3px solid var(--border-color);
+            border-radius: 5px; padding: 15px; margin-bottom: 40px;
+            display: flex; align-items: flex-start; text-align: left;
+            box-shadow: 5px 5px 15px rgba(0,0,0,0.1);
+            position: relative;
+            transform: rotate(-1deg); /* 살짝 삐뚤게 */
         }
-        
-        /* 파란색 비행기 아이콘 */
-        .mbti-icon {
-            position: absolute;
-            top: -15px;
-            left: 20px;
-            background: #0652DD; /* 요청하신 진한 파랑 */
-            color: white;
-            width: 40px; height: 40px;
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.2rem;
-            border: 3px solid var(--border-color);
-            box-shadow: 3px 3px 0px rgba(0,0,0,0.2);
+        /* 마스킹 테이프 효과 */
+        .char-box::before {
+            content: ''; position: absolute; top: -15px; left: 50%; transform: translateX(-50%);
+            width: 120px; height: 35px; background-color: var(--tape-color);
+            opacity: 0.8; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transform: translateX(-50%) rotate(2deg);
         }
 
         .char-img {
-            width: 100px;
-            height: 140px;
-            object-fit: cover;
-            border-radius: 12px;
-            border: 3px solid var(--border-color);
-            margin-right: 20px;
-            background: #ddd;
-            flex-shrink: 0; /* 이미지 크기 고정 */
+            width: 110px; height: 150px; object-fit: cover;
+            border: 2px solid #ddd; margin-right: 20px;
+            background: #eee; flex-shrink: 0; padding: 5px; background: white;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
         }
+        .char-info { flex-grow: 1; }
+        .char-title { 
+            font-size: 1.4rem; color: var(--border-color); margin-bottom: 10px;
+            border-bottom: 2px dashed #ddd; padding-bottom: 5px;
+        }
+        .char-desc { background: #f1f2f6; padding: 10px; border-radius: 10px; font-size: 1.1rem; margin-bottom: 10px;}
+        .reading-tip { background: #fff4e6; padding: 10px; border-radius: 10px; font-size: 1.1rem; border: 2px solid #ffeaa7; }
 
-        .char-info {
-            flex-grow: 1;
-        }
-        
-        .char-title {
-            font-size: 1.3rem;
-            font-weight: bold;
-            color: var(--text-color);
-            margin: 10px 0 15px 0; /* 아이콘 공간 확보 */
-        }
-
-        .char-desc, .reading-tip {
-            font-size: 1.1rem;
-            margin: 8px 0;
-            line-height: 1.5;
-            word-break: keep-all;
-            color: #555;
-        }
-        
-        /* 추천 도서 섹션 */
-        .recommend-label {
-            background: var(--accent-blue); display: inline-block; padding: 5px 15px; border-radius: 10px; border: 2px solid black; font-size: 1.2rem; margin-bottom: 15px;
-        }
-
+        /* 추천 도서 카드 */
         #book-recommendations {
-            display: grid; grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;
         }
-
         .book-card {
             background: white; border: 3px solid var(--border-color);
-            border-radius: 20px; padding: 15px;
+            border-radius: 15px; padding: 10px;
             display: flex; flex-direction: column; align-items: center;
-            box-shadow: 6px 6px 0px rgba(0,0,0,0.1); transition: 0.3s;
+            box-shadow: 4px 4px 0 rgba(0,0,0,0.1); transition: 0.3s;
+            position: relative;
         }
-        .book-card:hover { transform: translateY(-5px); box-shadow: 6px 11px 0px rgba(0,0,0,0.1); }
-        
+        .book-card:hover { transform: translateY(-5px) rotate(1deg); }
         .book-card img {
-            width: 100%; height: auto; aspect-ratio: 3 / 4;
-            object-fit: cover; margin-bottom: 15px;
-            border-radius: 12px; border: 3px solid var(--border-color);
+            width: 100%; aspect-ratio: 1 / 1.4; object-fit: cover;
+            border-radius: 8px; border: 1px solid #ddd; margin-bottom: 10px;
         }
-        .book-info { width: 100%; }
         .book-info h4 {
-            margin: 0 0 8px 0; color: var(--border-color); font-size: 1rem;
-            background: var(--accent-yellow); padding: 4px 12px;
-            border-radius: 15px; display: inline-block; border: 2px solid var(--border-color);
+            margin: 0; font-size: 0.9rem; background: var(--accent-pink); color: white;
+            padding: 3px 8px; border-radius: 20px; border: 2px solid var(--border-color);
+            position: absolute; top: -10px; left: -5px; transform: rotate(-5deg);
         }
-        .book-info h3 { margin: 5px 0 0 0; font-size: 1.3rem; color: var(--text-color); word-break: keep-all; }
-        
+        .book-info h3 { margin: 5px 0 0 0; font-size: 1.1rem; word-break: keep-all; line-height: 1.3; }
+
         @media (max-width: 600px) {
             #book-recommendations { grid-template-columns: 1fr; }
-            .container { padding: 30px 20px; }
-            #q-text { font-size: 1.6rem; }
-            .btn-ox { width: 80px; height: 80px; font-size: 3rem;}
-            .char-box { flex-direction: column; align-items: center; text-align: center; padding-top: 40px;}
-            .mbti-icon { left: 50%; transform: translateX(-50%); top: -20px;}
-            .char-img { margin: 0 0 20px 0; }
+            .char-box { flex-direction: column; align-items: center; text-align: center; transform: none; margin-top: 20px;}
+            .char-box::before { display: none; } /* 모바일은 테이프 제거 */
+            .char-img { margin: 0 0 15px 0; }
+            .btn-ox { width: 90px; height: 90px; }
         }
     </style>
 </head>
 <body>
 
+<div class="floating-bg">
+    <div class="float-item" style="top: 10%; left: 5%; animation-delay: 0s;">☁️</div>
+    <div class="float-item" style="top: 20%; right: 10%; animation-delay: 1s;">⭐</div>
+    <div class="float-item" style="bottom: 15%; left: 10%; animation-delay: 2s;">📚</div>
+    <div class="float-item" style="bottom: 30%; right: 5%; animation-delay: 3s;">🚀</div>
+    <div class="float-item" style="top: 50%; left: 2%; font-size: 2rem; animation-delay: 4s;">✏️</div>
+    <div class="float-item" style="top: 5%; right: 40%; font-size: 2rem; animation-delay: 1.5s;">🌈</div>
+</div>
+
 <div class="container">
+    <div class="sticker-deco" style="top: -20px; left: -20px; transform: rotate(-15deg);">🎀</div>
+    <div class="sticker-deco" style="bottom: -10px; right: -10px; transform: rotate(10deg);">🧸</div>
+
     <div id="start-screen">
-        <h1>✨ 나만의 독서 성향 ✨<br>테스트 해보기!</h1>
-        <p style="font-size: 5rem; margin: 30px 0;">🧸📚🔍</p>
-        <p>질문을 읽고<br><b>O</b> 또는 <b>X</b> 버튼을 눌러줘!</p>
-        <button class="btn" onclick="startTest()">테스트 시작하기 GOGO!</button>
+        <div style="font-size: 4rem; margin-bottom: 10px;">🏫📚🔍</div>
+        <h1>나만의<br>독서 성향 찾기!</h1>
+        <p>나는 어떤 책을 좋아할까?<br>재미있는 퀴즈로 알아보자!</p>
+        <button class="btn" onclick="startTest()">시작하기 ▶</button>
     </div>
 
     <div id="loading-screen" class="hidden">
-        <p style="font-size: 5rem;">🎲</p>
-        <p>문제 가져오는 중... 슝슝!</p>
+        <p style="font-size: 4rem; animation: spin 2s infinite linear;">🎡</p>
+        <p style="font-size: 1.5rem; font-weight: bold; color: var(--accent-blue);">열심히 분석 중...</p>
+        <style>@keyframes spin { 100% { transform: rotate(360deg); } }</style>
     </div>
 
     <div id="question-screen" class="hidden">
+        <div class="progress-bar"><div id="p-fill" class="progress-fill"></div></div>
         <h2 id="q-progress">1 / 12</h2>
         <h3 id="q-text">질문 내용</h3>
         <div class="ox-container">
@@ -254,35 +231,34 @@
     </div>
 
     <div id="result-screen" class="hidden">
-        <h2>🎊 나의 독서 유형은? 🎊</h2>
-        <h1 id="mbti-type"></h1>
-        <div id="mbti-desc"></div>
+        <div style="font-size: 1.2rem; background: var(--accent-yellow); display: inline-block; padding: 5px 15px; border-radius: 20px; border: 2px solid black; color: white; margin-bottom: 10px;">✨ 분석 완료! ✨</div>
+        <h2 style="margin:0;">나의 독서 캐릭터는?</h2>
+        <h1 id="mbti-type">TYPE</h1>
         
         <div class="char-box">
-            <div class="mbti-icon"><i class="fas fa-paper-plane"></i></div>
-            <img id="char-img" class="char-img" src="https://via.placeholder.com/100x140?text=Ready" alt="캐릭터 이미지">
+            <img id="char-img" class="char-img" src="" alt="캐릭터">
             <div class="char-info">
-                <div id="char-title" class="char-title">캐릭터명(작품) : - </div>
-                <div id="char-desc" class="char-desc">-</div>
-                <div id="reading-tip" class="reading-tip">-</div>
+                <div id="char-title" class="char-title"></div>
+                <div id="mbti-desc" class="char-desc"></div>
+                <div style="font-size: 0.9rem; color: #aaa; margin-top:5px;">💡 선생님의 조언</div>
+                <div id="reading-tip" class="reading-tip"></div>
             </div>
         </div>
 
-        <p class="recommend-label">👇 나에게 딱 맞는 추천 도서! 👇</p>
+        <p style="font-size: 1.3rem; font-weight: bold; color: var(--accent-pink);">🎁 이런 책을 추천해요!</p>
         <div id="book-recommendations"></div>
-        <button class="btn" style="background-color: var(--accent-pink); margin-top: 30px;" onclick="location.reload()">다시 테스트하기 🔄</button>
+        
+        <button class="btn" style="background-color: var(--accent-pink); margin-top: 30px;" onclick="location.reload()">다시 하기 🔄</button>
     </div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
 
 <script>
-    // ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼
-    // [중요] 여기에 CSV 링크를 다시 붙여넣어 주세요!
-    // ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼
-    const QUESTIONS_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSr94F8Ac7dccR7pp4QhighoUgUjy_ADV-5fC6RqGgkpmKDjZHW5zoJ_Kc6lrGg2GRwnOVgj7F31cc0/pub?gid=0&single=true&output=csv";
-    const RESULTS_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSr94F8Ac7dccR7pp4QhighoUgUjy_ADV-5fC6RqGgkpmKDjZHW5zoJ_Kc6lrGg2GRwnOVgj7F31cc0/pub?gid=950326899&single=true&output=csv";
-    // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+    // ▼▼▼ 여기에 링크 다시 넣어주세요 ▼▼▼
+    const QUESTIONS_URL = "여기에_Questions_시트_링크_붙여넣기";
+    const RESULTS_URL = "여기에_Results_시트_링크_붙여넣기";
+    // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
 
     let questions = [];
     let resultsData = [];
@@ -292,41 +268,47 @@
     async function fetchData() {
         document.getElementById('start-screen').classList.add('hidden');
         document.getElementById('loading-screen').classList.remove('hidden');
-
         try {
             const [qData, rData] = await Promise.all([
                 fetch(QUESTIONS_URL).then(res => res.text()),
                 fetch(RESULTS_URL).then(res => res.text())
             ]);
-
             questions = Papa.parse(qData, { header: true, skipEmptyLines: true }).data;
             resultsData = Papa.parse(rData, { header: true, skipEmptyLines: true }).data;
-
-            if(questions.length === 0 || !questions[0].Question) throw new Error("데이터 오류: Questions 시트 확인 필요");
-            // if(resultsData.length === 0 || !resultsData[0].Char_Name) throw new Error("데이터 오류: Results 시트 헤더 확인 필요");
-
+            
+            if(!questions.length) throw new Error("데이터 없음");
+            
             document.getElementById('loading-screen').classList.add('hidden');
             document.getElementById('question-screen').classList.remove('hidden');
             showQuestion();
-
-        } catch (error) { alert("오류 발생: " + error.message); }
+        } catch (error) { alert("오류: " + error.message); }
     }
 
     function startTest() { fetchData(); }
 
     function showQuestion() {
         const q = questions[currentQIndex];
-        document.getElementById('q-progress').innerText = `STEP ${currentQIndex + 1} / ${questions.length}`;
+        document.getElementById('q-progress').innerText = `Q${currentQIndex + 1}`;
         document.getElementById('q-text').innerText = q.Question;
+        // 게이지 바 업데이트
+        const percent = ((currentQIndex) / questions.length) * 100;
+        document.getElementById('p-fill').style.width = `${percent}%`;
     }
 
     function selectAnswer(choice) {
         const q = questions[currentQIndex];
         const typeToAdd = choice === 'O' ? q.If_O : q.If_X;
         if(typeToAdd && scores[typeToAdd.trim()] !== undefined) scores[typeToAdd.trim()]++;
+        
         currentQIndex++;
-        if (currentQIndex < questions.length) showQuestion();
-        else calculateResult();
+        // 게이지 바 애니메이션을 위해 잠시 대기
+        document.getElementById('p-fill').style.width = `${(currentQIndex / questions.length) * 100}%`;
+        
+        if (currentQIndex < questions.length) {
+            setTimeout(showQuestion, 200); // 0.2초 뒤 다음 문제
+        } else {
+            setTimeout(calculateResult, 200);
+        }
     }
 
     function calculateResult() {
@@ -338,26 +320,25 @@
         ].join('');
 
         const myResult = resultsData.find(r => r.MBTI === mbti);
-
+        
         document.getElementById('question-screen').classList.add('hidden');
         document.getElementById('result-screen').classList.remove('hidden');
         
-        document.getElementById('mbti-type').innerText = mbti + " 유형!";
-        document.getElementById('mbti-desc').innerText = myResult ? myResult.Description : "설명을 불러올 수 없습니다.";
-
-        // [NEW] 캐릭터 & 조언 데이터 채우기
+        // 결과 채우기
         if (myResult) {
-            const charImgSrc = myResult.Char_Img && myResult.Char_Img.startsWith('http') ? myResult.Char_Img : 'https://via.placeholder.com/100x140/ffeaa7/fd79a8?text=No+Image';
+            document.getElementById('mbti-type').innerText = mbti;
+            document.getElementById('mbti-desc').innerText = myResult.Description;
+            
+            // 캐릭터 정보
+            const charImgSrc = myResult.Char_Img && myResult.Char_Img.startsWith('http') ? myResult.Char_Img : 'https://via.placeholder.com/150';
             document.getElementById('char-img').src = charImgSrc;
-            document.getElementById('char-title').innerText = `캐릭터명(작품) : ${myResult.Char_Name || '-'} (『${myResult.Char_Book || '-'}』)`;
-            document.getElementById('char-desc').innerText = myResult.Char_Desc || '설명이 없습니다.';
-            document.getElementById('reading-tip').innerText = myResult.Reading_Tip || '조언이 없습니다.';
-        }
+            document.getElementById('char-title').innerHTML = `<span style="background:#ff7675; color:white; padding:2px 8px; border-radius:10px; font-size:0.8rem; margin-right:5px;">닮은꼴</span> <b>${myResult.Char_Name}</b> (${myResult.Char_Book})`;
+            document.getElementById('reading-tip').innerText = myResult.Reading_Tip;
 
-        const container = document.getElementById('book-recommendations');
-        container.innerHTML = '';
-
-        if (myResult) {
+            // 추천 도서
+            const container = document.getElementById('book-recommendations');
+            container.innerHTML = '';
+            
             const books = [
                 { label: myResult.Label1, title: myResult.Title1, img: myResult.Image1 },
                 { label: myResult.Label2, title: myResult.Title2, img: myResult.Image2 },
@@ -365,17 +346,14 @@
             ];
 
             books.forEach(book => {
-                const imgSrc = book.img && book.img.startsWith('http') ? book.img : 'https://via.placeholder.com/150x200/ffeaa7/fd79a8?text=표지준비중';
-                const html = `
+                const imgSrc = book.img && book.img.startsWith('http') ? book.img : 'https://via.placeholder.com/150x200?text=No+Img';
+                container.innerHTML += `
                     <div class="book-card">
+                        <div class="book-info"><h4>${book.label}</h4></div>
                         <img src="${imgSrc}" alt="${book.title}">
-                        <div class="book-info">
-                            <h4>${book.label}</h4>
-                            <h3>${book.title}</h3>
-                        </div>
+                        <div class="book-info"><h3>${book.title}</h3></div>
                     </div>
                 `;
-                container.innerHTML += html;
             });
         }
     }
