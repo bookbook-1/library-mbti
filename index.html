@@ -5,23 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>나만의 책 추천 MBTI 테스트</title>
     <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* --- 뉴트로 키치 디자인 설정 --- */
+        /* --- 뉴트로 키치 디자인 --- */
         :root {
-            /* 파스텔톤 배경과 톡톡 튀는 포인트 컬러 */
-            --main-bg: #F0EDFF; /* 연한 보라 배경 */
+            --main-bg: #F0EDFF;
             --container-bg: #ffffff;
             --text-color: #2d3436;
-            --accent-pink: #FF7EB3; /* 핑크 포인트 */
-            --accent-blue: #74EBD5; /* 민트 블루 포인트 */
-            --accent-yellow: #FDCB6E; /* 옐로우 포인트 */
-            --border-color: #2d3436; /* 진한 테두리색 */
+            --accent-pink: #FF7EB3;
+            --accent-blue: #74EBD5;
+            --accent-yellow: #FDCB6E;
+            --border-color: #2d3436;
         }
 
         body {
             font-family: 'Jua', sans-serif;
-            /* 키치한 느낌의 모눈종이 배경 패턴 */
             background-color: var(--main-bg);
             background-image: linear-gradient(var(--border-color) 1px, transparent 1px), linear-gradient(90deg, var(--border-color) 1px, transparent 1px);
             background-size: 30px 30px;
@@ -38,11 +37,10 @@
 
         .container {
             background: var(--container-bg);
-            max-width: 700px; /* 가로 배치를 위해 폭을 조금 넓혔습니다 */
+            max-width: 700px;
             width: 95%;
             padding: 40px 30px;
             border-radius: 25px;
-            /* 굵은 테두리와 딱딱한 그림자로 키치한 느낌 강조 */
             border: 4px solid var(--border-color);
             box-shadow: 8px 8px 0px rgba(0,0,0,0.2);
         }
@@ -51,17 +49,15 @@
             font-size: 2.8rem;
             color: var(--accent-pink);
             margin-bottom: 15px;
-            /* 글자 테두리 효과 */
             -webkit-text-stroke: 2px var(--border-color);
             text-shadow: 3px 3px 0px var(--accent-yellow);
         }
         
-        h2 { color: var(--text-color); }
+        h2 { color: var(--text-color); margin-top: 0;}
         p { font-size: 1.4rem; margin-bottom: 30px; line-height: 1.6; }
 
         .hidden { display: none; }
         
-        /* 기본 버튼 스타일 (키치 버전) */
         .btn {
             display: block;
             width: 70%;
@@ -77,17 +73,10 @@
             box-shadow: 5px 5px 0px var(--border-color);
             transition: all 0.1s;
         }
-        .btn:hover {
-            transform: translate(-2px, -2px);
-            box-shadow: 7px 7px 0px var(--border-color);
-            background-color: #5EDCC6;
-        }
-        .btn:active {
-            transform: translate(3px, 3px);
-            box-shadow: 2px 2px 0px var(--border-color);
-        }
+        .btn:hover { transform: translate(-2px, -2px); box-shadow: 7px 7px 0px var(--border-color); background-color: #5EDCC6; }
+        .btn:active { transform: translate(3px, 3px); box-shadow: 2px 2px 0px var(--border-color); }
 
-        /* --- OX 버튼 전용 스타일 (심플 & 키치) --- */
+        /* OX 버튼 */
         #q-text {
             font-size: 2rem;
             margin: 50px 0;
@@ -100,118 +89,143 @@
             border: 3px solid var(--border-color);
             box-shadow: 5px 5px 0 rgba(0,0,0,0.1);
         }
-        .ox-container {
-            display: flex;
-            gap: 25px;
-            justify-content: center;
-            margin-top: 40px;
-        }
-        /* 요청하신 심플한 OX 버튼 */
+        .ox-container { display: flex; gap: 25px; justify-content: center; margin-top: 40px; }
         .btn-ox {
-            width: 100px;
-            height: 100px;
-            border-radius: 20px; /* 둥근 사각형 */
-            border: 3px solid var(--border-color);
-            font-size: 4rem;
-            font-family: 'Jua', sans-serif;
-            font-weight: bold;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.1s;
-            box-shadow: 6px 6px 0px var(--border-color);
+            width: 100px; height: 100px;
+            border-radius: 20px; border: 3px solid var(--border-color);
+            font-size: 4rem; font-family: 'Jua', sans-serif; font-weight: bold;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            transition: all 0.1s; box-shadow: 6px 6px 0px var(--border-color);
         }
-        .btn-o {
-            background-color: #A3CB38; /* 초록 계열 */
-            color: white;
-        }
-        .btn-x {
-            background-color: var(--accent-pink); /* 핑크/레드 계열 */
-            color: white;
-        }
+        .btn-o { background-color: #A3CB38; color: white; }
+        .btn-x { background-color: var(--accent-pink); color: white; }
         .btn-ox:hover { transform: translate(-3px, -3px); box-shadow: 9px 9px 0px var(--border-color);}
         .btn-ox:active { transform: translate(3px, 3px); box-shadow: 3px 3px 0px var(--border-color);}
         
-        /* 진행률 표시 */
         #q-progress {
-            background: var(--accent-pink);
-            color: white;
-            display: inline-block;
-            padding: 8px 25px;
-            border-radius: 30px;
-            font-size: 1.3rem;
-            border: 3px solid var(--border-color);
+            background: var(--accent-pink); color: white;
+            display: inline-block; padding: 8px 25px;
+            border-radius: 30px; font-size: 1.3rem; border: 3px solid var(--border-color);
         }
         
-        /* --- 결과 화면 스타일 (가로 배치) --- */
+        /* --- 결과 화면 스타일 --- */
         #mbti-type {
             color: var(--accent-blue);
             font-size: 3rem;
             -webkit-text-stroke: 2px var(--border-color);
             text-shadow: 4px 4px 0 var(--accent-pink);
-            margin: 20px 0;
+            margin: 10px 0 20px 0;
+        }
+
+        #mbti-desc {
+            background: #fff;
+            border: 2px dashed var(--border-color);
+            border-radius: 15px;
+            padding: 15px;
+            margin: 0 0 30px 0;
+            font-size: 1.2rem;
+            color: #555;
+            word-break: keep-all;
+        }
+
+        /* [NEW] 캐릭터&조언 박스 스타일 (키치 버전) */
+        .char-box {
+            background: #f1f2f6; /* 요청하신 회색톤 배경 */
+            border: 3px solid var(--border-color);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: flex-start; /* 위쪽 정렬 */
+            text-align: left;
+            box-shadow: 6px 6px 0px rgba(0,0,0,0.1);
+            position: relative; /* 아이콘 배치를 위해 */
         }
         
-        /* [핵심] 책 목록을 가로 그리드로 배치 */
+        /* 파란색 비행기 아이콘 */
+        .mbti-icon {
+            position: absolute;
+            top: -15px;
+            left: 20px;
+            background: #0652DD; /* 요청하신 진한 파랑 */
+            color: white;
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem;
+            border: 3px solid var(--border-color);
+            box-shadow: 3px 3px 0px rgba(0,0,0,0.2);
+        }
+
+        .char-img {
+            width: 100px;
+            height: 140px;
+            object-fit: cover;
+            border-radius: 12px;
+            border: 3px solid var(--border-color);
+            margin-right: 20px;
+            background: #ddd;
+            flex-shrink: 0; /* 이미지 크기 고정 */
+        }
+
+        .char-info {
+            flex-grow: 1;
+        }
+        
+        .char-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--text-color);
+            margin: 10px 0 15px 0; /* 아이콘 공간 확보 */
+        }
+
+        .char-desc, .reading-tip {
+            font-size: 1.1rem;
+            margin: 8px 0;
+            line-height: 1.5;
+            word-break: keep-all;
+            color: #555;
+        }
+        
+        /* 추천 도서 섹션 */
+        .recommend-label {
+            background: var(--accent-blue); display: inline-block; padding: 5px 15px; border-radius: 10px; border: 2px solid black; font-size: 1.2rem; margin-bottom: 15px;
+        }
+
         #book-recommendations {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr); /* 3개의 열을 똑같은 비율로 만듦 */
-            gap: 20px; /* 책 사이 간격 */
-            margin-top: 30px;
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
         }
 
         .book-card {
-            background: white;
-            border: 3px solid var(--border-color);
-            border-radius: 20px;
-            padding: 15px;
-            /* 세로 정렬로 변경 (이미지 위, 텍스트 아래) */
-            display: flex;
-            flex-direction: column; 
-            align-items: center;
-            box-shadow: 6px 6px 0px rgba(0,0,0,0.1);
-            transition: 0.3s;
+            background: white; border: 3px solid var(--border-color);
+            border-radius: 20px; padding: 15px;
+            display: flex; flex-direction: column; align-items: center;
+            box-shadow: 6px 6px 0px rgba(0,0,0,0.1); transition: 0.3s;
         }
         .book-card:hover { transform: translateY(-5px); box-shadow: 6px 11px 0px rgba(0,0,0,0.1); }
         
         .book-card img {
-            width: 100%; /* 카드 너비에 맞춤 */
-            height: auto;
-            aspect-ratio: 3 / 4; /* 책 비율 유지 */
-            object-fit: cover;
-            margin-bottom: 15px;
-            border-radius: 12px;
-            border: 3px solid var(--border-color);
+            width: 100%; height: auto; aspect-ratio: 3 / 4;
+            object-fit: cover; margin-bottom: 15px;
+            border-radius: 12px; border: 3px solid var(--border-color);
         }
         .book-info { width: 100%; }
         .book-info h4 {
-            margin: 0 0 8px 0;
-            color: var(--border-color);
-            font-size: 1rem;
-            background: var(--accent-yellow);
-            padding: 4px 12px;
-            border-radius: 15px;
-            display: inline-block;
-            border: 2px solid var(--border-color);
+            margin: 0 0 8px 0; color: var(--border-color); font-size: 1rem;
+            background: var(--accent-yellow); padding: 4px 12px;
+            border-radius: 15px; display: inline-block; border: 2px solid var(--border-color);
         }
-        .book-info h3 {
-            margin: 5px 0 0 0;
-            font-size: 1.3rem;
-            color: var(--text-color);
-            word-break: keep-all; /* 단어 단위 줄바꿈 */
-        }
+        .book-info h3 { margin: 5px 0 0 0; font-size: 1.3rem; color: var(--text-color); word-break: keep-all; }
         
-        .loading { font-size: 1.8rem; color: var(--accent-pink); font-weight: bold;}
-
-        /* 모바일 화면 대응 (화면이 좁을 때 책이 세로로 보이게) */
         @media (max-width: 600px) {
-            #book-recommendations {
-                grid-template-columns: 1fr; /* 1열로 변경 */
-            }
+            #book-recommendations { grid-template-columns: 1fr; }
             .container { padding: 30px 20px; }
             #q-text { font-size: 1.6rem; }
             .btn-ox { width: 80px; height: 80px; font-size: 3rem;}
+            .char-box { flex-direction: column; align-items: center; text-align: center; padding-top: 40px;}
+            .mbti-icon { left: 50%; transform: translateX(-50%); top: -20px;}
+            .char-img { margin: 0 0 20px 0; }
         }
     </style>
 </head>
@@ -227,13 +241,12 @@
 
     <div id="loading-screen" class="hidden">
         <p style="font-size: 5rem;">🎲</p>
-        <p class="loading">문제 가져오는 중... 슝슝!</p>
+        <p>문제 가져오는 중... 슝슝!</p>
     </div>
 
     <div id="question-screen" class="hidden">
         <h2 id="q-progress">1 / 12</h2>
         <h3 id="q-text">질문 내용</h3>
-        
         <div class="ox-container">
             <button class="btn-ox btn-o" onclick="selectAnswer('O')">O</button>
             <button class="btn-ox btn-x" onclick="selectAnswer('X')">X</button>
@@ -243,10 +256,20 @@
     <div id="result-screen" class="hidden">
         <h2>🎊 나의 독서 유형은? 🎊</h2>
         <h1 id="mbti-type"></h1>
-        <p style="background: var(--accent-blue); display: inline-block; padding: 5px 15px; border-radius: 10px; border: 2px solid black;">👇 나에게 딱 맞는 추천 도서! 👇</p>
+        <div id="mbti-desc"></div>
         
+        <div class="char-box">
+            <div class="mbti-icon"><i class="fas fa-paper-plane"></i></div>
+            <img id="char-img" class="char-img" src="https://via.placeholder.com/100x140?text=Ready" alt="캐릭터 이미지">
+            <div class="char-info">
+                <div id="char-title" class="char-title">캐릭터명(작품) : - </div>
+                <div id="char-desc" class="char-desc">-</div>
+                <div id="reading-tip" class="reading-tip">-</div>
+            </div>
+        </div>
+
+        <p class="recommend-label">👇 나에게 딱 맞는 추천 도서! 👇</p>
         <div id="book-recommendations"></div>
-        
         <button class="btn" style="background-color: var(--accent-pink); margin-top: 30px;" onclick="location.reload()">다시 테스트하기 🔄</button>
     </div>
 </div>
@@ -254,12 +277,12 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
 
 <script>
-    // ==========================================
-    // [설정] 링크 유지
-    // ==========================================
+    // ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼
+    // [중요] 여기에 CSV 링크를 다시 붙여넣어 주세요!
+    // ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼
     const QUESTIONS_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSr94F8Ac7dccR7pp4QhighoUgUjy_ADV-5fC6RqGgkpmKDjZHW5zoJ_Kc6lrGg2GRwnOVgj7F31cc0/pub?gid=0&single=true&output=csv";
     const RESULTS_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSr94F8Ac7dccR7pp4QhighoUgUjy_ADV-5fC6RqGgkpmKDjZHW5zoJ_Kc6lrGg2GRwnOVgj7F31cc0/pub?gid=950326899&single=true&output=csv";
-    // ==========================================
+    // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
 
     let questions = [];
     let resultsData = [];
@@ -279,17 +302,14 @@
             questions = Papa.parse(qData, { header: true, skipEmptyLines: true }).data;
             resultsData = Papa.parse(rData, { header: true, skipEmptyLines: true }).data;
 
-            if(questions.length === 0 || !questions[0].Question) {
-                throw new Error("데이터 문제 발생");
-            }
+            if(questions.length === 0 || !questions[0].Question) throw new Error("데이터 오류: Questions 시트 확인 필요");
+            // if(resultsData.length === 0 || !resultsData[0].Char_Name) throw new Error("데이터 오류: Results 시트 헤더 확인 필요");
 
             document.getElementById('loading-screen').classList.add('hidden');
             document.getElementById('question-screen').classList.remove('hidden');
             showQuestion();
 
-        } catch (error) {
-            alert("오류가 발생했어요! (원인: " + error.message + ")");
-        }
+        } catch (error) { alert("오류 발생: " + error.message); }
     }
 
     function startTest() { fetchData(); }
@@ -303,17 +323,10 @@
     function selectAnswer(choice) {
         const q = questions[currentQIndex];
         const typeToAdd = choice === 'O' ? q.If_O : q.If_X;
-        
-        if(typeToAdd && scores[typeToAdd.trim()] !== undefined) {
-            scores[typeToAdd.trim()]++;
-        }
-
+        if(typeToAdd && scores[typeToAdd.trim()] !== undefined) scores[typeToAdd.trim()]++;
         currentQIndex++;
-        if (currentQIndex < questions.length) {
-            showQuestion();
-        } else {
-            calculateResult();
-        }
+        if (currentQIndex < questions.length) showQuestion();
+        else calculateResult();
     }
 
     function calculateResult() {
@@ -328,7 +341,18 @@
 
         document.getElementById('question-screen').classList.add('hidden');
         document.getElementById('result-screen').classList.remove('hidden');
+        
         document.getElementById('mbti-type').innerText = mbti + " 유형!";
+        document.getElementById('mbti-desc').innerText = myResult ? myResult.Description : "설명을 불러올 수 없습니다.";
+
+        // [NEW] 캐릭터 & 조언 데이터 채우기
+        if (myResult) {
+            const charImgSrc = myResult.Char_Img && myResult.Char_Img.startsWith('http') ? myResult.Char_Img : 'https://via.placeholder.com/100x140/ffeaa7/fd79a8?text=No+Image';
+            document.getElementById('char-img').src = charImgSrc;
+            document.getElementById('char-title').innerText = `캐릭터명(작품) : ${myResult.Char_Name || '-'} (『${myResult.Char_Book || '-'}』)`;
+            document.getElementById('char-desc').innerText = myResult.Char_Desc || '설명이 없습니다.';
+            document.getElementById('reading-tip').innerText = myResult.Reading_Tip || '조언이 없습니다.';
+        }
 
         const container = document.getElementById('book-recommendations');
         container.innerHTML = '';
@@ -341,8 +365,7 @@
             ];
 
             books.forEach(book => {
-                const imgSrc = book.img && book.img.startsWith('http') ? book.img : 'https://via.placeholder.com/150x200/ffeaa7/fd79a8?text=No+Image';
-                
+                const imgSrc = book.img && book.img.startsWith('http') ? book.img : 'https://via.placeholder.com/150x200/ffeaa7/fd79a8?text=표지준비중';
                 const html = `
                     <div class="book-card">
                         <img src="${imgSrc}" alt="${book.title}">
@@ -354,11 +377,8 @@
                 `;
                 container.innerHTML += html;
             });
-        } else {
-            container.innerHTML = '<p>결과를 찾지 못했어요!</p>';
         }
     }
 </script>
-
 </body>
 </html>
