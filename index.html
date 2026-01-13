@@ -146,8 +146,11 @@
             transition: 0.3s;
         }
         .book-card:hover { transform: translateY(-5px); }
+        
+        /* [수정됨] 이미지 크기를 키웠습니다 */
         .book-card img {
-            width: 90px; height: 130px;
+            width: 130px;  /* 기존 90px -> 130px로 변경 */
+            height: 190px; /* 기존 130px -> 190px로 변경 */
             object-fit: cover;
             margin-right: 20px;
             border-radius: 10px;
@@ -160,7 +163,9 @@
             font-size: 1.1rem;
             background: #A3CB38; color: white; padding: 2px 10px; border-radius: 10px; display: inline-block;
         }
-        .book-info h3 { margin: 5px 0 0 0; font-size: 1.4rem; color: #2d3436;}
+        /* [수정됨] 책 제목 크기도 약간 키웠습니다 */
+        .book-info h3 { margin: 5px 0 0 0; font-size: 1.6rem; color: #2d3436;}
+        
         .loading { font-size: 1.8rem; color: var(--btn-color); font-weight: bold;}
     </style>
 </head>
@@ -227,7 +232,6 @@
             resultsData = Papa.parse(rData, { header: true, skipEmptyLines: true }).data;
 
             if(questions.length === 0 || !questions[0].Question) {
-                // 데이터 진단
                 console.log("읽어온 데이터:", questions);
                 throw new Error("데이터를 읽어왔지만 내용이 비어있거나 'Question' 열을 찾을 수 없습니다.");
             }
@@ -245,7 +249,6 @@
 
     function showQuestion() {
         const q = questions[currentQIndex];
-        // 진행률 표시
         document.getElementById('q-progress').innerText = `${currentQIndex + 1} 단계 / 총 ${questions.length} 단계`;
         document.getElementById('q-text').innerText = q.Question;
     }
@@ -254,7 +257,6 @@
         const q = questions[currentQIndex];
         const typeToAdd = choice === 'O' ? q.If_O : q.If_X;
         
-        // 점수 계산 (공백 제거)
         if(typeToAdd && scores[typeToAdd.trim()] !== undefined) {
             scores[typeToAdd.trim()]++;
         }
@@ -268,7 +270,6 @@
     }
 
     function calculateResult() {
-        // MBTI 조합
         const mbti = [
             scores.E >= scores.I ? 'E' : 'I',
             scores.S >= scores.N ? 'S' : 'N',
@@ -278,7 +279,6 @@
 
         const myResult = resultsData.find(r => r.MBTI === mbti);
 
-        // 화면 전환
         document.getElementById('question-screen').classList.add('hidden');
         document.getElementById('result-screen').classList.remove('hidden');
         document.getElementById('mbti-type').innerText = mbti + " 유형";
@@ -287,7 +287,6 @@
         container.innerHTML = '';
 
         if (myResult) {
-            // 결과 데이터 뿌리기
             const books = [
                 { label: myResult.Label1, title: myResult.Title1, img: myResult.Image1 },
                 { label: myResult.Label2, title: myResult.Title2, img: myResult.Image2 },
@@ -295,8 +294,8 @@
             ];
 
             books.forEach(book => {
-                // 이미지가 비어있거나 이상하면 대체 이미지 사용
-                const imgSrc = book.img && book.img.startsWith('http') ? book.img : 'https://via.placeholder.com/90x130/ffeaa7/fd79a8?text=표지준비중';
+                // 이미지가 없는 경우 대체 이미지 크기도 맞춰줍니다.
+                const imgSrc = book.img && book.img.startsWith('http') ? book.img : 'https://via.placeholder.com/130x190/ffeaa7/fd79a8?text=표지준비중';
                 
                 const html = `
                     <div class="book-card">
