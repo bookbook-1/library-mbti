@@ -24,19 +24,25 @@
             display: flex; justify-content: center; align-items: center; min-height: 100vh; text-align: center; color: var(--border-color); overflow-x: hidden;
         }
         
+        /* 배경 장식 (클릭 불가) */
         .floating-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; }
         .float-item { position: absolute; font-size: 6rem; opacity: 0.4; animation: float 6s ease-in-out infinite; filter: blur(1px); }
         
-        /* [수정됨] 이스터에그 로켓 */
+        /* [수정됨] 이스터에그 로켓 (클릭 가능!) */
         #easter-rocket { 
-            position: fixed; bottom: 25%; right: 5%; font-size: 6rem;
-            cursor: pointer; z-index: 2000;
-            animation: float 4s ease-in-out infinite; transition: transform 0.5s; /* 회전 부드럽게 */
+            position: fixed; /* 화면 고정 */
+            bottom: 25%; right: 5%; /* 위치 */
+            font-size: 6rem;
+            cursor: pointer; /* 손가락 모양 커서 */
+            z-index: 9999; /* 모든 것보다 맨 위에! */
+            animation: float 4s ease-in-out infinite; 
+            transition: transform 0.5s;
             filter: drop-shadow(2px 2px 5px rgba(0,0,0,0.2));
+            pointer-events: auto !important; /* 클릭 강제 활성화 */
         }
         #easter-rocket:hover { transform: scale(1.2) rotate(-10deg); filter: drop-shadow(5px 5px 10px rgba(0,0,0,0.3)); }
         
-        /* 로켓 클릭 시 빙글 도는 애니메이션 클래스 */
+        /* 로켓 클릭 시 빙글 도는 애니메이션 */
         .barrel-roll { animation: roll 1s ease-in-out !important; }
         @keyframes roll { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
@@ -82,7 +88,7 @@
         .lib-search-btn:hover { background: #00b894; transform: translateY(-2px); }
         .lib-search-btn i { margin-right: 5px; }
 
-        /* SweetAlert 팝업 커스텀 (키치하게) */
+        /* SweetAlert 팝업 커스텀 */
         div:where(.swal2-popup) {
             border: 4px solid var(--border-color) !important;
             border-radius: 20px !important;
@@ -100,10 +106,11 @@
     <div class="float-item" style="top: 5%; left: 5%; animation-delay: 0s;">☁️</div>
     <div class="float-item" style="top: 15%; right: 5%; animation-delay: 1s;">⭐</div>
     <div class="float-item" style="bottom: 10%; left: 8%; animation-delay: 2s;">📚</div>
-    <div id="easter-rocket" onclick="triggerEasterEgg()">🚀</div>
     <div class="float-item" style="top: 45%; left: -2%; animation-delay: 4s;">✏️</div>
     <div class="float-item" style="top: 8%; right: 35%; animation-delay: 1.5s;">🌈</div>
 </div>
+
+<div id="easter-rocket" onclick="triggerEasterEgg()">🚀</div>
 
 <div class="container">
     <div class="sticker-deco" style="top: -25px; left: -25px; transform: rotate(-15deg);">🎀</div>
@@ -196,15 +203,13 @@
 
     function startTest() { fetchData(); }
 
-    // [NEW] 화려해진 이스터에그 함수
     function triggerEasterEgg() {
-        // 1. 로켓 회전 효과 (barrel-roll)
+        // 1. 로켓 회전
         const rocket = document.getElementById('easter-rocket');
         rocket.classList.add('barrel-roll');
-        // 애니메이션 끝나면 클래스 제거 (나중에 또 누를 수 있게)
         setTimeout(() => { rocket.classList.remove('barrel-roll'); }, 1000);
 
-        // 2. 불꽃놀이 효과 (Fireworks)
+        // 2. 불꽃놀이 (Fireworks)
         var duration = 3 * 1000;
         var animationEnd = Date.now() + duration;
         var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 9999 };
@@ -215,7 +220,6 @@
             var timeLeft = animationEnd - Date.now();
             if (timeLeft <= 0) { return clearInterval(interval); }
             var particleCount = 50 * (timeLeft / duration);
-            // 화면 여기저기서 펑펑!
             confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.9), y: Math.random() - 0.2 } }));
         }, 250);
 
@@ -227,7 +231,7 @@
             confirmButtonText: '야호!',
             confirmButtonColor: '#FF6B81',
             background: '#fff',
-            backdrop: `rgba(0,0,123,0.1)` // 배경을 살짝 어둡게
+            backdrop: `rgba(0,0,123,0.1)` 
         });
     }
 
@@ -267,7 +271,6 @@
         document.getElementById('question-screen').classList.add('hidden');
         document.getElementById('result-screen').classList.remove('hidden');
         
-        // 결과 화면 축하 폭죽
         var duration = 3 * 1000;
         var animationEnd = Date.now() + duration;
         var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 999 };
