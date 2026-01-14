@@ -24,28 +24,21 @@
             display: flex; justify-content: center; align-items: center; min-height: 100vh; text-align: center; color: var(--border-color); overflow-x: hidden;
         }
         
-        /* 배경 장식 (클릭 불가) */
         .floating-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; }
         .float-item { position: absolute; font-size: 6rem; opacity: 0.4; animation: float 6s ease-in-out infinite; filter: blur(1px); }
         
-        /* [수정됨] 이스터에그 로켓 (클릭 가능!) */
+        /* 이스터에그 로켓 */
         #easter-rocket { 
-            position: fixed; /* 화면 고정 */
-            bottom: 25%; right: 5%; /* 위치 */
-            font-size: 6rem;
-            cursor: pointer; /* 손가락 모양 커서 */
-            z-index: 9999; /* 모든 것보다 맨 위에! */
-            animation: float 4s ease-in-out infinite; 
-            transition: transform 0.5s;
+            position: fixed; bottom: 25%; right: 5%; font-size: 6rem;
+            cursor: pointer; z-index: 9999;
+            animation: float 4s ease-in-out infinite; transition: transform 0.5s;
             filter: drop-shadow(2px 2px 5px rgba(0,0,0,0.2));
-            pointer-events: auto !important; /* 클릭 강제 활성화 */
+            pointer-events: auto !important;
         }
         #easter-rocket:hover { transform: scale(1.2) rotate(-10deg); filter: drop-shadow(5px 5px 10px rgba(0,0,0,0.3)); }
         
-        /* 로켓 클릭 시 빙글 도는 애니메이션 */
         .barrel-roll { animation: roll 1s ease-in-out !important; }
         @keyframes roll { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
         @keyframes float { 0% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(-30px) rotate(10deg); } 100% { transform: translateY(0px) rotate(0deg); } }
         
         .container { background: var(--container-bg); max-width: 700px; width: 95%; padding: 40px 30px; border-radius: 30px; border: 4px solid var(--border-color); box-shadow: 10px 10px 0px rgba(0,0,0,0.15); position: relative; z-index: 1; }
@@ -88,7 +81,6 @@
         .lib-search-btn:hover { background: #00b894; transform: translateY(-2px); }
         .lib-search-btn i { margin-right: 5px; }
 
-        /* SweetAlert 팝업 커스텀 */
         div:where(.swal2-popup) {
             border: 4px solid var(--border-color) !important;
             border-radius: 20px !important;
@@ -178,44 +170,53 @@
     let scores = { E:0, I:0, S:0, N:0, T:0, F:0, J:0, P:0 };
     let easterEggMsg = "보물을 찾았군요!"; 
     let libraryUrl = ""; 
+    let isDataLoaded = false; // [NEW] 데이터 로딩 상태 확인용
 
+    // [중요] 웹페이지 열리자마자 데이터부터 가져오기!
     async function fetchData() {
-        document.getElementById('start-screen').classList.add('hidden');
-        document.getElementById('loading-screen').classList.remove('hidden');
+        const bustCache = "&t=" + Date.now();
         try {
             const [qData, rData] = await Promise.all([
-                fetch(QUESTIONS_URL).then(res => res.text()),
-                fetch(RESULTS_URL).then(res => res.text())
+                fetch(QUESTIONS_URL + bustCache).then(res => res.text()),
+                fetch(RESULTS_URL + bustCache).then(res => res.text())
             ]);
             questions = Papa.parse(qData, { header: true, skipEmptyLines: true }).data;
             resultsData = Papa.parse(rData, { header: true, skipEmptyLines: true }).data;
             
             if(!questions.length) throw new Error("데이터 없음");
             
+            // 데이터 로딩 성공하면 변수에 바로 저장!
             if(questions[0]['이스터에그']) easterEggMsg = questions[0]['이스터에그'];
             if(questions[0]['도서관링크']) libraryUrl = questions[0]['도서관링크'];
+            
+            isDataLoaded = true; // 로딩 완료 표시
 
-            document.getElementById('loading-screen').classList.add('hidden');
-            document.getElementById('question-screen').classList.remove('hidden');
-            showQuestion();
         } catch (error) { alert("오류: " + error.message); }
     }
 
-    function startTest() { fetchData(); }
+    // [수정됨] 시작 버튼 누르면 화면만 전환 (데이터는 이미 위에서 가져옴)
+    function startTest() { 
+        if (!isDataLoaded) {
+            alert("데이터를 불러오는 중입니다. 잠시만 기다려주세요!");
+            return;
+        }
+        document.getElementById('start-screen').classList.add('hidden');
+        document.getElementById('question-screen').classList.remove('hidden');
+        showQuestion();
+    }
+
+    // 웹페이지 시작하자마자 fetch 실행!
+    fetchData();
 
     function triggerEasterEgg() {
-        // 1. 로켓 회전
         const rocket = document.getElementById('easter-rocket');
         rocket.classList.add('barrel-roll');
         setTimeout(() => { rocket.classList.remove('barrel-roll'); }, 1000);
 
-        // 2. 불꽃놀이 (Fireworks)
         var duration = 3 * 1000;
         var animationEnd = Date.now() + duration;
         var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 9999 };
-
         function randomInRange(min, max) { return Math.random() * (max - min) + min; }
-
         var interval = setInterval(function() {
             var timeLeft = animationEnd - Date.now();
             if (timeLeft <= 0) { return clearInterval(interval); }
@@ -223,7 +224,6 @@
             confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.9), y: Math.random() - 0.2 } }));
         }, 250);
 
-        // 3. 예쁜 팝업창 (SweetAlert)
         Swal.fire({
             title: '🎉 히든 미션 성공! 🎉',
             text: easterEggMsg,
