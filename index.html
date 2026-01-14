@@ -21,31 +21,34 @@
             font-family: 'Jua', sans-serif; background-color: var(--bg-color);
             background-image: linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px);
             background-size: 40px 40px; margin: 0; padding: 20px;
-            /* 화면 밖으로 나가는 로켓을 가리기 위해 overflow hidden 설정 */
             display: flex; justify-content: center; align-items: center; min-height: 100vh; text-align: center; color: var(--border-color); overflow: hidden; position: relative;
         }
         
         .floating-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; }
         .float-item { position: absolute; font-size: 6rem; opacity: 0.4; animation: float 6s ease-in-out infinite; filter: blur(1px); }
         
-        /* [수정됨] 이스터에그 로켓 (JS로 움직일 거라 고정 위치 삭제) */
+        /* [NEW] 로켓 컨테이너 (위치 이동 담당 - GPU 가속) */
+        #rocket-pos-container {
+            position: fixed; top: 0; left: 0;
+            z-index: 9999;
+            pointer-events: none; /* 배경은 클릭 통과 */
+            will-change: transform; /* 성능 최적화 */
+        }
+
+        /* [NEW] 로켓 본체 (회전 및 클릭 담당) */
         #easter-rocket { 
-            position: fixed; /* 화면 기준으로 움직임 */
-            /* bottom: 25%; right: 5%;  <- 이 부분을 삭제했습니다! */
             font-size: 6rem;
             cursor: pointer; 
-            z-index: 9999; 
-            /* animation: float ... <- 제자리 둥둥 애니메이션도 삭제했습니다. */
-            transition: transform 0.1s linear; /* 부드러운 회전을 위해 */
+            pointer-events: auto; /* 로켓은 클릭 가능 */
+            transition: transform 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28); /* 회전 쫀득하게 */
             filter: drop-shadow(2px 2px 5px rgba(0,0,0,0.2));
-            pointer-events: auto !important;
-            will-change: transform, left, top; /* 성능 최적화 */
+            display: inline-block;
         }
-        #easter-rocket:hover { filter: drop-shadow(5px 5px 10px rgba(0,0,0,0.3)); transform: scale(1.1); }
+        #easter-rocket:hover { transform: scale(1.15); filter: drop-shadow(5px 5px 15px rgba(0,0,0,0.3)); }
         
-        /* 클릭 시 뱅글 도는 효과는 유지 (JS에서 클래스 추가/제거로 작동) */
+        /* 로켓 클릭 애니메이션 (360도 회전) */
         .barrel-roll { animation: roll 1s ease-in-out !important; }
-        @keyframes roll { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes roll { 0% { transform: rotate(0deg) scale(1); } 50% { transform: rotate(180deg) scale(1.2); } 100% { transform: rotate(360deg) scale(1); } }
 
         @keyframes float { 0% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(-30px) rotate(10deg); } 100% { transform: translateY(0px) rotate(0deg); } }
         
@@ -97,7 +100,7 @@
         }
 
         @media (max-width: 600px) { #book-recommendations { grid-template-columns: 1fr; } .char-box { flex-direction: column; align-items: center; text-align: center; transform: none; margin-top: 20px;} .char-box::before { display: none; } .char-img { margin: 0 0 15px 0; } .btn-ox { width: 90px; height: 90px; } .float-item { font-size: 4rem; } .btn-print { display: none; } #easter-rocket { font-size: 4rem; } }
-        @media print { body { background: white !important; -webkit-print-color-adjust: exact; } .floating-bg, .sticker-deco, .btn, #start-screen, #loading-screen, #question-screen, #easter-rocket, .lib-search-btn { display: none !important; } .container { box-shadow: none !important; border: none !important; width: 100% !important; max-width: 100% !important; padding: 0 !important; } #result-screen { display: block !important; } h1, h2, h3, h4, p, div { color: black !important; text-shadow: none !important; -webkit-text-stroke: 0 !important; } .char-box { transform: none !important; box-shadow: none !important; border: 2px solid #333 !important; } .char-box::before { display: none !important; } #book-recommendations { display: grid !important; grid-template-columns: repeat(3, 1fr) !important; gap: 10px !important; } .book-card { border: 1px solid #ccc !important; box-shadow: none !important; transform: none !important; break-inside: avoid; } .book-info h4 { background: #eee !important; color: black !important; border: 1px solid #aaa !important; position: static !important; transform: none !important; display: inline-block !important; } .call-num { border: 1px solid #000 !important; background: white !important; } }
+        @media print { body { background: white !important; -webkit-print-color-adjust: exact; } .floating-bg, .sticker-deco, .btn, #start-screen, #loading-screen, #question-screen, #rocket-pos-container, .lib-search-btn { display: none !important; } .container { box-shadow: none !important; border: none !important; width: 100% !important; max-width: 100% !important; padding: 0 !important; } #result-screen { display: block !important; } h1, h2, h3, h4, p, div { color: black !important; text-shadow: none !important; -webkit-text-stroke: 0 !important; } .char-box { transform: none !important; box-shadow: none !important; border: 2px solid #333 !important; } .char-box::before { display: none !important; } #book-recommendations { display: grid !important; grid-template-columns: repeat(3, 1fr) !important; gap: 10px !important; } .book-card { border: 1px solid #ccc !important; box-shadow: none !important; transform: none !important; break-inside: avoid; } .book-info h4 { background: #eee !important; color: black !important; border: 1px solid #aaa !important; position: static !important; transform: none !important; display: inline-block !important; } .call-num { border: 1px solid #000 !important; background: white !important; } }
     </style>
 </head>
 <body>
@@ -110,7 +113,9 @@
     <div class="float-item" style="top: 8%; right: 35%; animation-delay: 1.5s;">🌈</div>
 </div>
 
-<div id="easter-rocket" onclick="triggerEasterEgg()">🚀</div>
+<div id="rocket-pos-container">
+    <div id="easter-rocket" onclick="triggerEasterEgg()">🚀</div>
+</div>
 
 <div class="container">
     <div class="sticker-deco" style="top: -25px; left: -25px; transform: rotate(-15deg);">🎀</div>
@@ -178,15 +183,14 @@
     let scores = { E:0, I:0, S:0, N:0, T:0, F:0, J:0, P:0 };
     let easterEggMsg = "보물을 찾았군요!"; 
     let libraryUrl = ""; 
-    let isDataLoaded = false;
+    let isDataLoaded = false; 
 
-    // [NEW] 로켓 이동 관련 변수
-    let rocketX = window.innerWidth / 2;
-    let rocketY = window.innerHeight - 100;
-    let rocketVX = (Math.random() - 0.5) * 2; // X축 속도 (천천히)
-    let rocketVY = (Math.random() - 0.5) * 2; // Y축 속도 (천천히)
-    const rocketEl = document.getElementById('easter-rocket');
-    let isRocketClicked = false;
+    // [NEW] 로켓 물리 엔진 변수 (부드러운 움직임)
+    let rX = window.innerWidth - 150, rY = window.innerHeight - 150;
+    let vX = -1.2, vY = -0.8; // 초기 속도
+    const posContainer = document.getElementById('rocket-pos-container');
+    const rocketBody = document.getElementById('easter-rocket');
+    let isRocketPaused = false;
 
     async function fetchData() {
         const bustCache = "&t=" + Date.now();
@@ -203,7 +207,7 @@
             if(questions[0]['이스터에그']) easterEggMsg = questions[0]['이스터에그'];
             if(questions[0]['도서관링크']) libraryUrl = questions[0]['도서관링크'];
             
-            isDataLoaded = true;
+            isDataLoaded = true; 
 
         } catch (error) { alert("오류: " + error.message); }
     }
@@ -220,58 +224,66 @@
 
     fetchData();
 
-    // [NEW] 로켓을 화면 안에서 떠다니게 하는 함수
-    function moveRocketAround() {
-        if(isRocketClicked) return; // 클릭했을 땐 잠시 멈춤
+    // [NEW] 부드럽고 자연스러운 로켓 이동 (GPU 가속 사용)
+    function animateRocket() {
+        if(isRocketPaused) {
+            requestAnimationFrame(animateRocket);
+            return;
+        }
 
         // 1. 위치 업데이트
-        rocketX += rocketVX;
-        rocketY += rocketVY;
+        rX += vX;
+        rY += vY;
 
-        // 2. 벽에 부딪히면 튕기기 (속도 반전)
-        if (rocketX <= 0 || rocketX >= window.innerWidth - rocketEl.offsetWidth) {
-            rocketVX *= -1;
+        // 2. 벽 충돌 처리 (자연스럽게 튕기기)
+        if (rX <= 0 || rX >= window.innerWidth - 100) {
+            vX *= -1;
+            // 벽에 끼임 방지
+            rX = Math.max(0, Math.min(rX, window.innerWidth - 100));
         }
-        if (rocketY <= 0 || rocketY >= window.innerHeight - rocketEl.offsetHeight) {
-            rocketVY *= -1;
+        if (rY <= 0 || rY >= window.innerHeight - 100) {
+            vY *= -1;
+            rY = Math.max(0, Math.min(rY, window.innerHeight - 100));
         }
 
-        // 3. 이동 방향에 맞춰 회전 각도 계산 (조금 더 리얼하게!)
-        // Math.atan2(y, x)는 라디안 값을 반환하므로 degree로 변환
-        // 로켓 이모지(🚀)가 원래 45도 정도 기울어져 있어서 45도를 더해줌
-        const angle = Math.atan2(rocketVY, rocketVX) * (180 / Math.PI) + 45;
+        // 3. 랜덤한 흔들림 추가 (유영하는 느낌)
+        vX += (Math.random() - 0.5) * 0.05; 
+        vY += (Math.random() - 0.5) * 0.05;
 
-        // 4. 화면에 적용
-        rocketEl.style.left = rocketX + 'px';
-        rocketEl.style.top = rocketY + 'px';
-        rocketEl.style.transform = `rotate(${angle}deg)`;
+        // 속도 제한 (너무 빠르거나 멈추지 않게)
+        const maxSpeed = 2.5;
+        const minSpeed = 0.5;
+        const currentSpeed = Math.sqrt(vX*vX + vY*vY);
+        
+        if (currentSpeed > maxSpeed) { vX *= 0.95; vY *= 0.95; }
+        if (currentSpeed < minSpeed) { vX *= 1.05; vY *= 1.05; }
 
-        // 5. 다음 프레임 요청 (무한 반복)
-        requestAnimationFrame(moveRocketAround);
+        // 4. 회전 각도 계산 (+45도 보정)
+        const angle = Math.atan2(vY, vX) * (180 / Math.PI) + 45;
+
+        // 5. 화면 적용 (컨테이너는 이동, 본체는 회전)
+        posContainer.style.transform = `translate3d(${rX}px, ${rY}px, 0)`;
+        rocketBody.style.transform = `rotate(${angle}deg)`;
+
+        requestAnimationFrame(animateRocket);
     }
 
-    // 페이지 로드 후 로켓 이동 시작!
-    moveRocketAround();
+    // 애니메이션 시작
+    animateRocket();
 
-    // 윈도우 크기 변경 시 로켓이 화면 밖으로 나가지 않게 위치 재조정
+    // 창 크기 변경 대응
     window.addEventListener('resize', () => {
-        rocketX = Math.min(rocketX, window.innerWidth - rocketEl.offsetWidth);
-        rocketY = Math.min(rocketY, window.innerHeight - rocketEl.offsetHeight);
+        rX = Math.min(rX, window.innerWidth - 100);
+        rY = Math.min(rY, window.innerHeight - 100);
     });
 
-
     function triggerEasterEgg() {
-        isRocketClicked = true; // 움직임 잠시 정지
-        const rocket = document.getElementById('easter-rocket');
+        isRocketPaused = true; // 멈춤
         
-        // 클릭 시 뱅글 도는 효과 (기존 transform 덮어쓰기)
-        rocket.classList.add('barrel-roll');
-        setTimeout(() => { 
-            rocket.classList.remove('barrel-roll'); 
-            isRocketClicked = false; // 움직임 재개
-            moveRocketAround(); // 다시 움직이기 시작
-        }, 1000);
-
+        // 뱅글 도는 애니메이션
+        rocketBody.classList.add('barrel-roll');
+        
+        // 폭죽 효과
         var duration = 3 * 1000;
         var animationEnd = Date.now() + duration;
         var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 9999 };
@@ -283,6 +295,7 @@
             confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.9), y: Math.random() - 0.2 } }));
         }, 250);
 
+        // 팝업창
         Swal.fire({
             title: '🎉 히든 미션 성공! 🎉',
             text: easterEggMsg,
@@ -291,6 +304,10 @@
             confirmButtonColor: '#FF6B81',
             background: '#fff',
             backdrop: `rgba(0,0,123,0.1)` 
+        }).then(() => {
+            // 팝업 닫으면 다시 움직임
+            rocketBody.classList.remove('barrel-roll');
+            isRocketPaused = false;
         });
     }
 
