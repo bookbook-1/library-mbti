@@ -36,6 +36,7 @@
         }
         
         .floating-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; }
+        /* float-item: 반투명하고 둥실거리는 애니메이션 적용 */
         .float-item { position: absolute; font-size: 6rem; opacity: 0.4; animation: float 6s ease-in-out infinite; filter: blur(1px); }
         
         /* 로켓 컨테이너 (위치 이동) */
@@ -132,9 +133,8 @@
     <div class="float-item" style="bottom: 10%; left: 8%; animation-delay: 2s;">📚</div>
     <div class="float-item" style="top: 45%; left: -2%; animation-delay: 4s;">✏️</div>
     <div class="float-item" style="top: 8%; right: 35%; animation-delay: 1.5s;">🌈</div>
+    <div class="float-item" style="bottom: 15%; right: 8%; font-size: 5rem; animation-delay: 3s;">📖</div>
 </div>
-
-<div class="sticker-deco" style="position: fixed; bottom: 15%; right: 8%; font-size: 5rem; transform: rotate(-15deg); z-index: 0; filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.1));">📖</div>
 
 <div id="rocket-pos-container">
     <div id="easter-rocket" onclick="triggerEasterEgg()">🚀</div>
