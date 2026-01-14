@@ -36,7 +36,7 @@
         .floating-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; }
         .float-item { position: absolute; font-size: 6rem; opacity: 0.4; animation: float 6s ease-in-out infinite; filter: blur(1px); }
         
-        /* 로켓 컨테이너 (위치 이동 담당) */
+        /* 로켓 컨테이너 */
         #rocket-pos-container {
             position: fixed; top: 0; left: 0;
             z-index: 9999;
@@ -44,12 +44,11 @@
             will-change: transform;
         }
 
-        /* 로켓 본체 (회전 담당) */
+        /* 로켓 본체 */
         #easter-rocket { 
             font-size: 6rem;
             cursor: pointer; 
             pointer-events: auto;
-            /* transition 없음 -> JS로 매 프레임 부드럽게 회전 */
             filter: drop-shadow(2px 2px 5px rgba(0,0,0,0.2));
             display: inline-block;
             will-change: transform;
@@ -202,10 +201,11 @@
     let libraryUrl = ""; 
     let isDataLoaded = false; 
 
-    // [NEW] 부드러운 유영을 위한 변수
+    // [NEW] 부드러운 유영(Steering)을 위한 물리 변수
     let rX = window.innerWidth - 150, rY = window.innerHeight - 150;
-    let vX = 1.0, vY = -1.0; // 초기 속도
-    const speed = 1.5; // 로켓의 일정 속도 (이 값을 조절하면 빠르기 변경 가능)
+    let angle = Math.random() * Math.PI * 2; // 초기 방향 랜덤
+    let angleVelocity = 0; // 회전 속도 (핸들 꺾는 정도)
+    const speed = 2; // 이동 속도
     
     const posContainer = document.getElementById('rocket-pos-container');
     const rocketBody = document.getElementById('easter-rocket');
@@ -243,44 +243,56 @@
 
     fetchData();
 
-    // [NEW] 100% 부드러운 곡선 이동 (떨림 없음)
+    // [NEW] 100% 무진동 부드러운 곡선 이동 (Steering Behavior)
     function animateRocket() {
         if(isRocketPaused) {
             requestAnimationFrame(animateRocket);
             return;
         }
 
-        // 1. 방향을 아주 조금씩 틉니다. (랜덤 조향)
-        // 숫자가 작을수록(0.05) 완만한 곡선, 클수록(0.2) 급격한 회전
-        vX += (Math.random() - 0.5) * 0.15;
-        vY += (Math.random() - 0.5) * 0.15;
+        // 1. 핸들을 아주 살짝 무작위로 돌립니다 (회전 가속도)
+        // 숫자가 작을수록(0.005 ~ 0.02) 더 부드럽고 큰 원을 그리며 돕니다.
+        angleVelocity += (Math.random() - 0.5) * 0.02; 
+        
+        // 2. 핸들 중앙 복귀 (Damping) - 너무 뺑글뺑글 돌지 않게
+        angleVelocity *= 0.95; 
 
-        // 2. [핵심] 속도를 항상 일정하게 만듭니다. (Normalize)
-        // 방향은 바뀌지만 속도는 늘 일정하므로 절대 떨리지 않습니다.
-        const currentSpeed = Math.sqrt(vX*vX + vY*vY);
-        vX = (vX / currentSpeed) * speed;
-        vY = (vY / currentSpeed) * speed;
+        // 3. 실제 방향 회전
+        angle += angleVelocity;
 
-        // 3. 위치 업데이트
-        rX += vX;
-        rY += vY;
+        // 4. 속도 벡터 계산 (항상 일정한 속도)
+        let vx = Math.cos(angle) * speed;
+        let vy = Math.sin(angle) * speed;
 
-        // 4. 벽 충돌 처리 (부드러운 반사)
+        // 5. 위치 업데이트
+        rX += vx;
+        rY += vy;
+
+        // 6. 벽 충돌 처리 (부드러운 반사)
+        let hitWall = false;
         if (rX <= 0 || rX >= window.innerWidth - 100) {
-            vX *= -1; // 반대 방향으로 튕기기
-            rX = Math.max(0, Math.min(rX, window.innerWidth - 100)); // 벽 밖으로 나감 방지
+            vx *= -1; // X축 반전
+            hitWall = true;
+            rX = Math.max(0, Math.min(rX, window.innerWidth - 100));
         }
         if (rY <= 0 || rY >= window.innerHeight - 100) {
-            vY *= -1;
+            vy *= -1; // Y축 반전
+            hitWall = true;
             rY = Math.max(0, Math.min(rY, window.innerHeight - 100));
         }
 
-        // 5. 회전 각도 계산 (부드럽게 따라감)
-        const angle = Math.atan2(vY, vX) * (180 / Math.PI) + 45;
+        // 벽에 부딪혔으면, 각도를 새로운 반사 벡터에 맞춰 재설정
+        if(hitWall) {
+            angle = Math.atan2(vy, vx);
+            angleVelocity = 0; // 충돌 시 회전 관성 초기화 (안정적 튕김)
+        }
 
-        // 6. 화면 그리기 (GPU 가속)
+        // 7. 각도 보정 (+45도: 로켓 이미지 원래 기울기)
+        const displayAngle = angle * (180 / Math.PI) + 45;
+
+        // 8. 화면 그리기
         posContainer.style.transform = `translate3d(${rX}px, ${rY}px, 0)`;
-        rocketBody.style.transform = `rotate(${angle}deg)`;
+        rocketBody.style.transform = `rotate(${displayAngle}deg)`;
 
         requestAnimationFrame(animateRocket);
     }
