@@ -36,7 +36,7 @@
         .floating-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; }
         .float-item { position: absolute; font-size: 6rem; opacity: 0.4; animation: float 6s ease-in-out infinite; filter: blur(1px); }
         
-        /* 로켓 컨테이너 */
+        /* 로켓 컨테이너 (위치 이동 담당) */
         #rocket-pos-container {
             position: fixed; top: 0; left: 0;
             z-index: 9999;
@@ -44,11 +44,12 @@
             will-change: transform;
         }
 
-        /* 로켓 본체 */
+        /* 로켓 본체 (회전 담당) */
         #easter-rocket { 
             font-size: 6rem;
             cursor: pointer; 
             pointer-events: auto;
+            /* transition 제거: JS 물리 엔진과 충돌 방지 */
             filter: drop-shadow(2px 2px 5px rgba(0,0,0,0.2));
             display: inline-block;
             will-change: transform;
@@ -201,11 +202,11 @@
     let libraryUrl = ""; 
     let isDataLoaded = false; 
 
-    // [NEW] 부드러운 유영(Steering)을 위한 물리 변수
+    // [NEW] 부드러운 우주 유영을 위한 물리 변수
     let rX = window.innerWidth - 150, rY = window.innerHeight - 150;
-    let angle = Math.random() * Math.PI * 2; // 초기 방향 랜덤
-    let angleVelocity = 0; // 회전 속도 (핸들 꺾는 정도)
-    const speed = 2; // 이동 속도
+    let vx = -1.2, vy = -0.8; // 초기 속도 벡터
+    let steerAngle = 0; // 조향 각도 (핸들)
+    const speed = 1.8; // 로켓의 이동 속도
     
     const posContainer = document.getElementById('rocket-pos-container');
     const rocketBody = document.getElementById('easter-rocket');
@@ -243,56 +244,51 @@
 
     fetchData();
 
-    // [NEW] 100% 무진동 부드러운 곡선 이동 (Steering Behavior)
+    // [NEW] 100% 무진동, 완전 부드러운 유영 알고리즘 (Soft Steering)
     function animateRocket() {
         if(isRocketPaused) {
             requestAnimationFrame(animateRocket);
             return;
         }
 
-        // 1. 핸들을 아주 살짝 무작위로 돌립니다 (회전 가속도)
-        // 숫자가 작을수록(0.005 ~ 0.02) 더 부드럽고 큰 원을 그리며 돕니다.
-        angleVelocity += (Math.random() - 0.5) * 0.02; 
-        
-        // 2. 핸들 중앙 복귀 (Damping) - 너무 뺑글뺑글 돌지 않게
-        angleVelocity *= 0.95; 
+        // 1. 방향(핸들)을 아주 천천히 돌립니다. (급격한 변화 방지)
+        // (Math.random() - 0.5) * 0.05 -> 아주 미세한 변화
+        steerAngle += (Math.random() - 0.5) * 0.05;
 
-        // 3. 실제 방향 회전
-        angle += angleVelocity;
+        // 2. 현재 이동 벡터(vx, vy)에 조향 각도(steerAngle)를 아주 살짝 반영
+        // 로켓이 가던 방향을 유지하려는 성질(관성)을 크게 줌
+        vx += Math.cos(steerAngle) * 0.05;
+        vy += Math.sin(steerAngle) * 0.05;
 
-        // 4. 속도 벡터 계산 (항상 일정한 속도)
-        let vx = Math.cos(angle) * speed;
-        let vy = Math.sin(angle) * speed;
+        // 3. [핵심] 속도를 항상 일정하게 고정 (Normalize)
+        // 방향은 변해도 속도가 일정해서 절대 떨리지 않음
+        const currentSpeed = Math.sqrt(vx*vx + vy*vy);
+        vx = (vx / currentSpeed) * speed;
+        vy = (vy / currentSpeed) * speed;
 
-        // 5. 위치 업데이트
+        // 4. 위치 업데이트
         rX += vx;
         rY += vy;
 
-        // 6. 벽 충돌 처리 (부드러운 반사)
-        let hitWall = false;
+        // 5. 벽 충돌 처리 (부드럽게 튕기기)
         if (rX <= 0 || rX >= window.innerWidth - 100) {
             vx *= -1; // X축 반전
-            hitWall = true;
             rX = Math.max(0, Math.min(rX, window.innerWidth - 100));
+            // 충돌 시 핸들을 반대편으로 살짝 돌려줌 (자연스러움)
+            steerAngle += Math.PI; 
         }
         if (rY <= 0 || rY >= window.innerHeight - 100) {
             vy *= -1; // Y축 반전
-            hitWall = true;
             rY = Math.max(0, Math.min(rY, window.innerHeight - 100));
+            steerAngle += Math.PI;
         }
 
-        // 벽에 부딪혔으면, 각도를 새로운 반사 벡터에 맞춰 재설정
-        if(hitWall) {
-            angle = Math.atan2(vy, vx);
-            angleVelocity = 0; // 충돌 시 회전 관성 초기화 (안정적 튕김)
-        }
+        // 6. 회전 각도 계산 (이동 방향을 그대로 바라봄)
+        const angle = Math.atan2(vy, vx) * (180 / Math.PI) + 45;
 
-        // 7. 각도 보정 (+45도: 로켓 이미지 원래 기울기)
-        const displayAngle = angle * (180 / Math.PI) + 45;
-
-        // 8. 화면 그리기
+        // 7. 화면 그리기 (GPU 가속)
         posContainer.style.transform = `translate3d(${rX}px, ${rY}px, 0)`;
-        rocketBody.style.transform = `rotate(${displayAngle}deg)`;
+        rocketBody.style.transform = `rotate(${angle}deg)`;
 
         requestAnimationFrame(animateRocket);
     }
