@@ -41,7 +41,7 @@
         }
         .float-item {
             position: absolute; 
-            font-size: 6rem; /* 큼직하게 */
+            font-size: 6rem;
             opacity: 0.4;
             animation: float 6s ease-in-out infinite;
             filter: blur(1px);
@@ -82,7 +82,7 @@
         
         /* 버튼 스타일 */
         .btn {
-            display: block; width: 80%; margin: 25px auto; padding: 15px;
+            display: block; width: 80%; margin: 20px auto; padding: 15px;
             border: 3px solid var(--border-color); border-radius: 50px;
             background-color: var(--accent-blue); color: white;
             font-size: 1.8rem; font-family: 'Jua', sans-serif;
@@ -91,6 +91,13 @@
         }
         .btn:hover { transform: translateY(-3px); box-shadow: 0 9px 0 var(--border-color); background-color: #5352ed; }
         .btn:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--border-color); }
+
+        /* 인쇄 버튼 전용 스타일 */
+        .btn-print {
+            background-color: #2d3436; color: white;
+            font-size: 1.4rem; padding: 12px; width: 60%;
+        }
+        .btn-print:hover { background-color: #000; }
 
         /* OX 질문 박스 */
         #q-text {
@@ -191,6 +198,23 @@
             .char-img { margin: 0 0 15px 0; }
             .btn-ox { width: 90px; height: 90px; }
             .float-item { font-size: 4rem; }
+            .btn-print { display: none; } /* 모바일에선 인쇄 버튼 숨김 */
+        }
+
+        /* ------------------------------------------- */
+        /* [중요] 인쇄할 때만 적용되는 스타일 (깔끔하게) */
+        /* ------------------------------------------- */
+        @media print {
+            body { background: white !important; -webkit-print-color-adjust: exact; }
+            .floating-bg, .sticker-deco, .btn, #start-screen, #loading-screen, #question-screen { display: none !important; }
+            .container { box-shadow: none !important; border: none !important; width: 100% !important; max-width: 100% !important; padding: 0 !important; }
+            #result-screen { display: block !important; }
+            h1, h2, h3, h4, p, div { color: black !important; text-shadow: none !important; -webkit-text-stroke: 0 !important; }
+            .char-box { transform: none !important; box-shadow: none !important; border: 2px solid #333 !important; }
+            .char-box::before { display: none !important; }
+            #book-recommendations { display: grid !important; grid-template-columns: repeat(3, 1fr) !important; gap: 10px !important; }
+            .book-card { border: 1px solid #ccc !important; box-shadow: none !important; transform: none !important; break-inside: avoid; }
+            .book-info h4 { background: #eee !important; color: black !important; border: 1px solid #aaa !important; position: static !important; transform: none !important; display: inline-block !important; }
         }
     </style>
 </head>
@@ -234,7 +258,7 @@
 
     <div id="result-screen" class="hidden">
         <div style="font-size: 1.2rem; background: var(--accent-yellow); display: inline-block; padding: 5px 15px; border-radius: 20px; border: 2px solid black; color: white; margin-bottom: 10px;">✨ 분석 완료! ✨</div>
-        <h2 style="margin:0;">나의 독서 유형은?</h2>
+        <h2 style="margin:0;">나의 독서 캐릭터는?</h2>
         <h1 id="mbti-type">TYPE</h1>
         
         <div class="char-box">
@@ -242,7 +266,7 @@
             <div class="char-info">
                 <div id="char-title" class="char-title"></div>
                 <div id="mbti-desc" class="char-desc"></div>
-                <div style="font-size: 0.9rem; color: #aaa; margin-top:5px;">💡 책과 더 친해지는 방법</div>
+                <div style="font-size: 0.9rem; color: #aaa; margin-top:5px;">💡 선생님의 조언</div>
                 <div id="reading-tip" class="reading-tip"></div>
             </div>
         </div>
@@ -250,7 +274,8 @@
         <p style="font-size: 1.3rem; font-weight: bold; color: var(--accent-pink);">🎁 이런 책을 추천해요!</p>
         <div id="book-recommendations"></div>
         
-        <button class="btn" style="background-color: var(--accent-pink); margin-top: 30px;" onclick="location.reload()">다시 하기 🔄</button>
+        <button class="btn btn-print" onclick="window.print()"><i class="fas fa-print"></i> 결과 인쇄하기</button>
+        <button class="btn" style="background-color: var(--accent-pink); margin-top: 15px;" onclick="location.reload()">다시 하기 🔄</button>
     </div>
 </div>
 
@@ -258,7 +283,7 @@
 
 <script>
     // ==========================================
-    // [설정] 선생님의 구글 시트 링크가 적용되었습니다!
+    // [설정] 선생님의 구글 시트 링크
     // ==========================================
     const QUESTIONS_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSr94F8Ac7dccR7pp4QhighoUgUjy_ADV-5fC6RqGgkpmKDjZHW5zoJ_Kc6lrGg2GRwnOVgj7F31cc0/pub?gid=0&single=true&output=csv";
     const RESULTS_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSr94F8Ac7dccR7pp4QhighoUgUjy_ADV-5fC6RqGgkpmKDjZHW5zoJ_Kc6lrGg2GRwnOVgj7F31cc0/pub?gid=950326899&single=true&output=csv";
@@ -344,11 +369,11 @@
         if (myResult) {
             document.getElementById('mbti-type').innerText = mbti;
             
-            // 캐릭터 정보 채우기
+            // 캐릭터 정보
             const charImgSrc = myResult.Char_Img && myResult.Char_Img.startsWith('http') ? myResult.Char_Img : 'https://via.placeholder.com/150';
             document.getElementById('char-img').src = charImgSrc;
-            document.getElementById('char-title').innerHTML = `<span style="background:#ff7675; color:white; padding:2px 8px; border-radius:10px; font-size:0.8rem; margin-right:5px;">나와 닮은 책 속 주인공</span> <b>${myResult.Char_Name}</b> (${myResult.Char_Book})`;
-            document.getElementById('mbti-desc').innerText = myResult.Char_Desc; // Char_Desc(캐릭터 설명) 사용
+            document.getElementById('char-title').innerHTML = `<span style="background:#ff7675; color:white; padding:2px 8px; border-radius:10px; font-size:0.8rem; margin-right:5px;">닮은꼴</span> <b>${myResult.Char_Name}</b> (${myResult.Char_Book})`;
+            document.getElementById('mbti-desc').innerText = myResult.Char_Desc;
             document.getElementById('reading-tip').innerText = myResult.Reading_Tip;
 
             const container = document.getElementById('book-recommendations');
