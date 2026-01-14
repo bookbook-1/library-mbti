@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
@@ -21,6 +21,7 @@
             font-family: 'Jua', sans-serif; background-color: var(--bg-color);
             background-image: linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px);
             background-size: 40px 40px; margin: 0; padding: 20px;
+            /* 화면 밖으로 나가는 로켓을 가리기 위해 overflow hidden 설정 */
             display: flex; justify-content: center; align-items: center; min-height: 100vh; text-align: center; color: var(--border-color); overflow: hidden; position: relative;
         }
         
@@ -46,7 +47,7 @@
         }
         #easter-rocket:hover { transform: scale(1.15); filter: drop-shadow(5px 5px 15px rgba(0,0,0,0.3)); }
         
-        /* 로켓 클릭 애니메이션 (360도 회전) */
+        /* 클릭 시 뱅글 도는 효과 */
         .barrel-roll { animation: roll 1s ease-in-out !important; }
         @keyframes roll { 0% { transform: rotate(0deg) scale(1); } 50% { transform: rotate(180deg) scale(1.2); } 100% { transform: rotate(360deg) scale(1); } }
 
@@ -185,7 +186,7 @@
     let libraryUrl = ""; 
     let isDataLoaded = false; 
 
-    // [NEW] 로켓 물리 엔진 변수 (부드러운 움직임)
+    // [NEW] 부드러운 로켓 움직임 변수
     let rX = window.innerWidth - 150, rY = window.innerHeight - 150;
     let vX = -1.2, vY = -0.8; // 초기 속도
     const posContainer = document.getElementById('rocket-pos-container');
@@ -224,7 +225,7 @@
 
     fetchData();
 
-    // [NEW] 부드럽고 자연스러운 로켓 이동 (GPU 가속 사용)
+    // [NEW] 부드러운 유영 애니메이션 함수
     function animateRocket() {
         if(isRocketPaused) {
             requestAnimationFrame(animateRocket);
@@ -238,19 +239,18 @@
         // 2. 벽 충돌 처리 (자연스럽게 튕기기)
         if (rX <= 0 || rX >= window.innerWidth - 100) {
             vX *= -1;
-            // 벽에 끼임 방지
-            rX = Math.max(0, Math.min(rX, window.innerWidth - 100));
+            rX = Math.max(0, Math.min(rX, window.innerWidth - 100)); // 끼임 방지
         }
         if (rY <= 0 || rY >= window.innerHeight - 100) {
             vY *= -1;
             rY = Math.max(0, Math.min(rY, window.innerHeight - 100));
         }
 
-        // 3. 랜덤한 흔들림 추가 (유영하는 느낌)
+        // 3. 랜덤 유영 (wandering) - 부자연스러운 직선 이동 방지
         vX += (Math.random() - 0.5) * 0.05; 
         vY += (Math.random() - 0.5) * 0.05;
 
-        // 속도 제한 (너무 빠르거나 멈추지 않게)
+        // 속도 제한 (너무 빨라지거나 멈추지 않게)
         const maxSpeed = 2.5;
         const minSpeed = 0.5;
         const currentSpeed = Math.sqrt(vX*vX + vY*vY);
@@ -261,7 +261,7 @@
         // 4. 회전 각도 계산 (+45도 보정)
         const angle = Math.atan2(vY, vX) * (180 / Math.PI) + 45;
 
-        // 5. 화면 적용 (컨테이너는 이동, 본체는 회전)
+        // 5. 화면 적용 (translate3d로 GPU 가속)
         posContainer.style.transform = `translate3d(${rX}px, ${rY}px, 0)`;
         rocketBody.style.transform = `rotate(${angle}deg)`;
 
@@ -271,7 +271,6 @@
     // 애니메이션 시작
     animateRocket();
 
-    // 창 크기 변경 대응
     window.addEventListener('resize', () => {
         rX = Math.min(rX, window.innerWidth - 100);
         rY = Math.min(rY, window.innerHeight - 100);
@@ -280,10 +279,8 @@
     function triggerEasterEgg() {
         isRocketPaused = true; // 멈춤
         
-        // 뱅글 도는 애니메이션
         rocketBody.classList.add('barrel-roll');
         
-        // 폭죽 효과
         var duration = 3 * 1000;
         var animationEnd = Date.now() + duration;
         var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 9999 };
@@ -295,17 +292,15 @@
             confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.9), y: Math.random() - 0.2 } }));
         }, 250);
 
-        // 팝업창
         Swal.fire({
-            title: '🎉 히든 미션 성공! 🎉',
+            title: '🎉 보물찾기 성공! 🎉',
             text: easterEggMsg,
             icon: 'success',
-            confirmButtonText: '야호!',
+            confirmButtonText: '닫기',
             confirmButtonColor: '#FF6B81',
             background: '#fff',
             backdrop: `rgba(0,0,123,0.1)` 
         }).then(() => {
-            // 팝업 닫으면 다시 움직임
             rocketBody.classList.remove('barrel-roll');
             isRocketPaused = false;
         });
