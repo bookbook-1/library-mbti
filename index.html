@@ -21,39 +21,60 @@
             font-family: 'Jua', sans-serif; background-color: var(--bg-color);
             background-image: linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px);
             background-size: 40px 40px; margin: 0; padding: 20px;
-            /* 화면 밖으로 나가는 로켓을 가리기 위해 overflow hidden 설정 */
-            display: flex; justify-content: center; align-items: center; min-height: 100vh; text-align: center; color: var(--border-color); overflow: hidden; position: relative;
+            
+            /* [수정됨] 스크롤 문제 해결! */
+            min-height: 100vh;
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            text-align: center; 
+            color: var(--border-color);
+            
+            /* overflow: hidden 삭제 -> 세로 스크롤 가능하게 변경 */
+            overflow-x: hidden; /* 가로 스크롤만 방지 */
+            position: relative;
         }
         
         .floating-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; }
         .float-item { position: absolute; font-size: 6rem; opacity: 0.4; animation: float 6s ease-in-out infinite; filter: blur(1px); }
         
-        /* [NEW] 로켓 컨테이너 (위치 이동 담당 - GPU 가속) */
+        /* 로켓 컨테이너 (위치 이동 - 고정 위치) */
         #rocket-pos-container {
             position: fixed; top: 0; left: 0;
             z-index: 9999;
-            pointer-events: none; /* 배경은 클릭 통과 */
-            will-change: transform; /* 성능 최적화 */
+            pointer-events: none;
+            will-change: transform;
         }
 
-        /* [NEW] 로켓 본체 (회전 및 클릭 담당) */
+        /* 로켓 본체 */
         #easter-rocket { 
             font-size: 6rem;
             cursor: pointer; 
-            pointer-events: auto; /* 로켓은 클릭 가능 */
-            transition: transform 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28); /* 회전 쫀득하게 */
+            pointer-events: auto;
+            transition: transform 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
             filter: drop-shadow(2px 2px 5px rgba(0,0,0,0.2));
             display: inline-block;
         }
         #easter-rocket:hover { transform: scale(1.15); filter: drop-shadow(5px 5px 15px rgba(0,0,0,0.3)); }
         
-        /* 클릭 시 뱅글 도는 효과 */
         .barrel-roll { animation: roll 1s ease-in-out !important; }
         @keyframes roll { 0% { transform: rotate(0deg) scale(1); } 50% { transform: rotate(180deg) scale(1.2); } 100% { transform: rotate(360deg) scale(1); } }
 
         @keyframes float { 0% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(-30px) rotate(10deg); } 100% { transform: translateY(0px) rotate(0deg); } }
         
-        .container { background: var(--container-bg); max-width: 700px; width: 95%; padding: 40px 30px; border-radius: 30px; border: 4px solid var(--border-color); box-shadow: 10px 10px 0px rgba(0,0,0,0.15); position: relative; z-index: 1; }
+        /* [수정됨] 컨테이너가 화면보다 커질 때 잘리지 않도록 margin 확보 */
+        .container { 
+            background: var(--container-bg); 
+            max-width: 700px; width: 95%; 
+            padding: 40px 30px; 
+            border-radius: 30px; 
+            border: 4px solid var(--border-color); 
+            box-shadow: 10px 10px 0px rgba(0,0,0,0.15); 
+            position: relative; 
+            z-index: 1; 
+            margin: 40px auto; /* 위아래 여백 추가 */
+        }
+
         .sticker-deco { position: absolute; font-size: 3.5rem; filter: drop-shadow(2px 2px 0px rgba(0,0,0,0.1)); z-index: 10; }
         h1 { font-size: 2.8rem; color: var(--accent-pink); margin-bottom: 15px; -webkit-text-stroke: 2px var(--border-color); text-shadow: 3px 3px 0px #FAD390; }
         p { font-size: 1.4rem; margin-bottom: 30px; line-height: 1.6; }
@@ -101,7 +122,7 @@
         }
 
         @media (max-width: 600px) { #book-recommendations { grid-template-columns: 1fr; } .char-box { flex-direction: column; align-items: center; text-align: center; transform: none; margin-top: 20px;} .char-box::before { display: none; } .char-img { margin: 0 0 15px 0; } .btn-ox { width: 90px; height: 90px; } .float-item { font-size: 4rem; } .btn-print { display: none; } #easter-rocket { font-size: 4rem; } }
-        @media print { body { background: white !important; -webkit-print-color-adjust: exact; } .floating-bg, .sticker-deco, .btn, #start-screen, #loading-screen, #question-screen, #rocket-pos-container, .lib-search-btn { display: none !important; } .container { box-shadow: none !important; border: none !important; width: 100% !important; max-width: 100% !important; padding: 0 !important; } #result-screen { display: block !important; } h1, h2, h3, h4, p, div { color: black !important; text-shadow: none !important; -webkit-text-stroke: 0 !important; } .char-box { transform: none !important; box-shadow: none !important; border: 2px solid #333 !important; } .char-box::before { display: none !important; } #book-recommendations { display: grid !important; grid-template-columns: repeat(3, 1fr) !important; gap: 10px !important; } .book-card { border: 1px solid #ccc !important; box-shadow: none !important; transform: none !important; break-inside: avoid; } .book-info h4 { background: #eee !important; color: black !important; border: 1px solid #aaa !important; position: static !important; transform: none !important; display: inline-block !important; } .call-num { border: 1px solid #000 !important; background: white !important; } }
+        @media print { body { background: white !important; -webkit-print-color-adjust: exact; overflow: visible !important; } .floating-bg, .sticker-deco, .btn, #start-screen, #loading-screen, #question-screen, #rocket-pos-container, .lib-search-btn { display: none !important; } .container { box-shadow: none !important; border: none !important; width: 100% !important; max-width: 100% !important; padding: 0 !important; margin: 0 !important; } #result-screen { display: block !important; } h1, h2, h3, h4, p, div { color: black !important; text-shadow: none !important; -webkit-text-stroke: 0 !important; } .char-box { transform: none !important; box-shadow: none !important; border: 2px solid #333 !important; } .char-box::before { display: none !important; } #book-recommendations { display: grid !important; grid-template-columns: repeat(3, 1fr) !important; gap: 10px !important; } .book-card { border: 1px solid #ccc !important; box-shadow: none !important; transform: none !important; break-inside: avoid; } .book-info h4 { background: #eee !important; color: black !important; border: 1px solid #aaa !important; position: static !important; transform: none !important; display: inline-block !important; } .call-num { border: 1px solid #000 !important; background: white !important; } }
     </style>
 </head>
 <body>
@@ -171,12 +192,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
 
 <script>
-    // ==========================================
-    // [설정] 선생님의 구글 시트 링크
-    // ==========================================
     const QUESTIONS_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSr94F8Ac7dccR7pp4QhighoUgUjy_ADV-5fC6RqGgkpmKDjZHW5zoJ_Kc6lrGg2GRwnOVgj7F31cc0/pub?gid=0&single=true&output=csv";
     const RESULTS_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSr94F8Ac7dccR7pp4QhighoUgUjy_ADV-5fC6RqGgkpmKDjZHW5zoJ_Kc6lrGg2GRwnOVgj7F31cc0/pub?gid=950326899&single=true&output=csv";
-    // ==========================================
 
     let questions = [];
     let resultsData = [];
@@ -186,9 +203,9 @@
     let libraryUrl = ""; 
     let isDataLoaded = false; 
 
-    // [NEW] 부드러운 로켓 움직임 변수
+    // 부드러운 로켓 움직임 변수
     let rX = window.innerWidth - 150, rY = window.innerHeight - 150;
-    let vX = -1.2, vY = -0.8; // 초기 속도
+    let vX = -1.2, vY = -0.8; 
     const posContainer = document.getElementById('rocket-pos-container');
     const rocketBody = document.getElementById('easter-rocket');
     let isRocketPaused = false;
@@ -225,32 +242,27 @@
 
     fetchData();
 
-    // [NEW] 부드러운 유영 애니메이션 함수
     function animateRocket() {
         if(isRocketPaused) {
             requestAnimationFrame(animateRocket);
             return;
         }
 
-        // 1. 위치 업데이트
         rX += vX;
         rY += vY;
 
-        // 2. 벽 충돌 처리 (자연스럽게 튕기기)
         if (rX <= 0 || rX >= window.innerWidth - 100) {
             vX *= -1;
-            rX = Math.max(0, Math.min(rX, window.innerWidth - 100)); // 끼임 방지
+            rX = Math.max(0, Math.min(rX, window.innerWidth - 100));
         }
         if (rY <= 0 || rY >= window.innerHeight - 100) {
             vY *= -1;
             rY = Math.max(0, Math.min(rY, window.innerHeight - 100));
         }
 
-        // 3. 랜덤 유영 (wandering) - 부자연스러운 직선 이동 방지
         vX += (Math.random() - 0.5) * 0.05; 
         vY += (Math.random() - 0.5) * 0.05;
 
-        // 속도 제한 (너무 빨라지거나 멈추지 않게)
         const maxSpeed = 2.5;
         const minSpeed = 0.5;
         const currentSpeed = Math.sqrt(vX*vX + vY*vY);
@@ -258,17 +270,14 @@
         if (currentSpeed > maxSpeed) { vX *= 0.95; vY *= 0.95; }
         if (currentSpeed < minSpeed) { vX *= 1.05; vY *= 1.05; }
 
-        // 4. 회전 각도 계산 (+45도 보정)
         const angle = Math.atan2(vY, vX) * (180 / Math.PI) + 45;
 
-        // 5. 화면 적용 (translate3d로 GPU 가속)
         posContainer.style.transform = `translate3d(${rX}px, ${rY}px, 0)`;
         rocketBody.style.transform = `rotate(${angle}deg)`;
 
         requestAnimationFrame(animateRocket);
     }
 
-    // 애니메이션 시작
     animateRocket();
 
     window.addEventListener('resize', () => {
@@ -277,7 +286,7 @@
     });
 
     function triggerEasterEgg() {
-        isRocketPaused = true; // 멈춤
+        isRocketPaused = true; 
         
         rocketBody.classList.add('barrel-roll');
         
