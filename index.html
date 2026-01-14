@@ -22,7 +22,6 @@
             background-image: linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px);
             background-size: 40px 40px; margin: 0; padding: 20px;
             
-            /* 스크롤 문제 해결 */
             min-height: 100vh;
             display: flex; 
             justify-content: center; 
@@ -30,7 +29,6 @@
             text-align: center; 
             color: var(--border-color);
             
-            /* 세로 스크롤 허용 */
             overflow-x: hidden; 
             position: relative;
         }
@@ -38,22 +36,23 @@
         .floating-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; }
         .float-item { position: absolute; font-size: 6rem; opacity: 0.4; animation: float 6s ease-in-out infinite; filter: blur(1px); }
         
-        /* 로켓 컨테이너 (위치 이동) */
+        /* 로켓 컨테이너 (위치 이동 담당) */
         #rocket-pos-container {
             position: fixed; top: 0; left: 0;
             z-index: 9999;
             pointer-events: none;
-            will-change: transform;
+            will-change: transform; /* 부드러운 움직임 필수 */
         }
 
-        /* [수정됨] 로켓 본체 - transition 속성 제거 (핑그르르 도는 버그 해결) */
+        /* 로켓 본체 (회전 담당) */
         #easter-rocket { 
             font-size: 6rem;
             cursor: pointer; 
             pointer-events: auto;
-            /* transition: transform ... 이 줄을 삭제했습니다! */
+            /* transition 제거: JS 애니메이션과 충돌 방지 */
             filter: drop-shadow(2px 2px 5px rgba(0,0,0,0.2));
             display: inline-block;
+            will-change: transform;
         }
         #easter-rocket:hover { transform: scale(1.15); filter: drop-shadow(5px 5px 15px rgba(0,0,0,0.3)); }
         
@@ -203,9 +202,10 @@
     let libraryUrl = ""; 
     let isDataLoaded = false; 
 
-    // 부드러운 로켓 움직임 변수
+    // 부드러운 로켓 움직임 변수 (랜덤 요소 제거)
     let rX = window.innerWidth - 150, rY = window.innerHeight - 150;
-    let vX = -1.2, vY = -0.8; 
+    // 초기 속도를 조금 더 부드럽게 설정
+    let vX = -1.5, vY = -1.0; 
     const posContainer = document.getElementById('rocket-pos-container');
     const rocketBody = document.getElementById('easter-rocket');
     let isRocketPaused = false;
@@ -242,15 +242,18 @@
 
     fetchData();
 
+    // [수정됨] 부드럽게 미끄러지는 함수 (떨림 원인 제거)
     function animateRocket() {
         if(isRocketPaused) {
             requestAnimationFrame(animateRocket);
             return;
         }
 
+        // 1. 위치 업데이트
         rX += vX;
         rY += vY;
 
+        // 2. 벽 충돌 처리 (단순 반사)
         if (rX <= 0 || rX >= window.innerWidth - 100) {
             vX *= -1;
             rX = Math.max(0, Math.min(rX, window.innerWidth - 100));
@@ -260,18 +263,14 @@
             rY = Math.max(0, Math.min(rY, window.innerHeight - 100));
         }
 
-        vX += (Math.random() - 0.5) * 0.05; 
-        vY += (Math.random() - 0.5) * 0.05;
+        // [중요] 여기서 랜덤하게 속도를 바꾸는 코드를 삭제했습니다!
+        // 이제 속도가 일정하게 유지되어 떨리지 않습니다.
 
-        const maxSpeed = 2.5;
-        const minSpeed = 0.5;
-        const currentSpeed = Math.sqrt(vX*vX + vY*vY);
-        
-        if (currentSpeed > maxSpeed) { vX *= 0.95; vY *= 0.95; }
-        if (currentSpeed < minSpeed) { vX *= 1.05; vY *= 1.05; }
-
+        // 3. 회전 각도 계산 (+45도 보정)
+        // 속도가 일정하므로 각도도 일정하게 유지됩니다 (부드러움)
         const angle = Math.atan2(vY, vX) * (180 / Math.PI) + 45;
 
+        // 4. 화면 적용
         posContainer.style.transform = `translate3d(${rX}px, ${rY}px, 0)`;
         rocketBody.style.transform = `rotate(${angle}deg)`;
 
