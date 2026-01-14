@@ -41,7 +41,7 @@
             position: fixed; top: 0; left: 0;
             z-index: 9999;
             pointer-events: none;
-            will-change: transform; /* 부드러운 움직임 필수 */
+            will-change: transform;
         }
 
         /* 로켓 본체 (회전 담당) */
@@ -49,7 +49,7 @@
             font-size: 6rem;
             cursor: pointer; 
             pointer-events: auto;
-            /* transition 제거: JS 애니메이션과 충돌 방지 */
+            /* transition 없음 -> JS로 매 프레임 부드럽게 회전 */
             filter: drop-shadow(2px 2px 5px rgba(0,0,0,0.2));
             display: inline-block;
             will-change: transform;
@@ -202,10 +202,11 @@
     let libraryUrl = ""; 
     let isDataLoaded = false; 
 
-    // 부드러운 로켓 움직임 변수 (랜덤 요소 제거)
+    // [NEW] 부드러운 유영을 위한 변수
     let rX = window.innerWidth - 150, rY = window.innerHeight - 150;
-    // 초기 속도를 조금 더 부드럽게 설정
-    let vX = -1.5, vY = -1.0; 
+    let vX = 1.0, vY = -1.0; // 초기 속도
+    const speed = 1.5; // 로켓의 일정 속도 (이 값을 조절하면 빠르기 변경 가능)
+    
     const posContainer = document.getElementById('rocket-pos-container');
     const rocketBody = document.getElementById('easter-rocket');
     let isRocketPaused = false;
@@ -242,35 +243,42 @@
 
     fetchData();
 
-    // [수정됨] 부드럽게 미끄러지는 함수 (떨림 원인 제거)
+    // [NEW] 100% 부드러운 곡선 이동 (떨림 없음)
     function animateRocket() {
         if(isRocketPaused) {
             requestAnimationFrame(animateRocket);
             return;
         }
 
-        // 1. 위치 업데이트
+        // 1. 방향을 아주 조금씩 틉니다. (랜덤 조향)
+        // 숫자가 작을수록(0.05) 완만한 곡선, 클수록(0.2) 급격한 회전
+        vX += (Math.random() - 0.5) * 0.15;
+        vY += (Math.random() - 0.5) * 0.15;
+
+        // 2. [핵심] 속도를 항상 일정하게 만듭니다. (Normalize)
+        // 방향은 바뀌지만 속도는 늘 일정하므로 절대 떨리지 않습니다.
+        const currentSpeed = Math.sqrt(vX*vX + vY*vY);
+        vX = (vX / currentSpeed) * speed;
+        vY = (vY / currentSpeed) * speed;
+
+        // 3. 위치 업데이트
         rX += vX;
         rY += vY;
 
-        // 2. 벽 충돌 처리 (단순 반사)
+        // 4. 벽 충돌 처리 (부드러운 반사)
         if (rX <= 0 || rX >= window.innerWidth - 100) {
-            vX *= -1;
-            rX = Math.max(0, Math.min(rX, window.innerWidth - 100));
+            vX *= -1; // 반대 방향으로 튕기기
+            rX = Math.max(0, Math.min(rX, window.innerWidth - 100)); // 벽 밖으로 나감 방지
         }
         if (rY <= 0 || rY >= window.innerHeight - 100) {
             vY *= -1;
             rY = Math.max(0, Math.min(rY, window.innerHeight - 100));
         }
 
-        // [중요] 여기서 랜덤하게 속도를 바꾸는 코드를 삭제했습니다!
-        // 이제 속도가 일정하게 유지되어 떨리지 않습니다.
-
-        // 3. 회전 각도 계산 (+45도 보정)
-        // 속도가 일정하므로 각도도 일정하게 유지됩니다 (부드러움)
+        // 5. 회전 각도 계산 (부드럽게 따라감)
         const angle = Math.atan2(vY, vX) * (180 / Math.PI) + 45;
 
-        // 4. 화면 적용
+        // 6. 화면 그리기 (GPU 가속)
         posContainer.style.transform = `translate3d(${rX}px, ${rY}px, 0)`;
         rocketBody.style.transform = `rotate(${angle}deg)`;
 
